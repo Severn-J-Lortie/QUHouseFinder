@@ -1,0 +1,33 @@
+# Node.js dependencies
+node_modules/
+# Occasionally, the .npm directory is used by npm or related tools to store cache data
+.npm/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Private tokens
+token.json
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+
+# dotenv environment variable file
+.env
+.env.test
+.env.production
+
+# VS Code settings directory and other IDE-specific directories
+.vscode/
+tmp
