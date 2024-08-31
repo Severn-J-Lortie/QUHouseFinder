@@ -6,7 +6,7 @@ function main() {
   let prompt = model.createPrompt('all', post);
   console.log(prompt);
   console.log('-------------');
-  prompt = model.createPrompt(['tags', 'date'], post);
+  prompt = model.createPrompt(['rent', 'leaseStartDate'], post);
   console.log(prompt);
 }
 main();

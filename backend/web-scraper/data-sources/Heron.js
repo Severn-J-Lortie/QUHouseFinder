@@ -20,8 +20,9 @@ export class Heron extends Datasource {
     super('Heron Management', 'https://mipprental.com/C00185', selectors, {
       postprocess: async (listing) => {
         const hfClient = HFClient.getInstance();
-        const leaseStartDate = hfClient.generateCompletion('leaseStartDate', listing.description);
-        listing.leaseStartDate = leaseStartDate;
+        const response = await hfClient.generateCompletion(['leaseStartDate'], listing.description);
+        listing.leaseStartDate = response.leaseStartDate;
+        return listing;
       }
     });
   }

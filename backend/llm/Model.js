@@ -5,7 +5,7 @@ export class Model {
     const fieldDescriptors = {
       leaseStartDate: 
 `leaseStartDate: <lease start date>. The date field should be populated with a date 
-of the form: dd/mm/yyyy\n`,
+of the form: dd/mm/yyyy or 'now' if the lease is available as of now.\n`,
       rent: 'rent: <rent>',
       beds: 'beds: <number of beds>\n',
       rentalType: 'rentalType: <sublet/lease>\n'
@@ -27,7 +27,7 @@ of the form: dd/mm/yyyy\n`,
 Respond only with the details in the exact format I specify, with no 
 additional comments, explanations, or reasoning. If you can't find a 
 specific detail, or if you are unsure, just use "null" for that field.
-Required format is a JSON object with the following fields:
+Required format is a JSON object with ONLY the following fields:
 ${fieldMessage}
 Here is the post: 
 ${content}`;

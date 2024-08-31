@@ -5,7 +5,7 @@ import { Model } from './Model.js';
 export class HFClient {
   static #instance = null;
   constructor() {
-    if (instance) {
+    if (HFClient.#instance) {
       throw new Error('Use getInstance()');
     }
     const require = createRequire(import.meta.url);
@@ -21,9 +21,9 @@ export class HFClient {
       model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
       messages
     })
-    return result.choices[0].message;
+    return JSON.parse(result.choices[0].message.content);
   }
-  getInstance() {
+  static getInstance() {
     if (!HFClient.#instance) {
       HFClient.#instance = new HFClient();
     }
