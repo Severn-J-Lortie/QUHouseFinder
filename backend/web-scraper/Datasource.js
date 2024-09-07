@@ -2,6 +2,7 @@ import {JSDOM, VirtualConsole } from 'jsdom';
 import fetch from 'node-fetch';
 
 import { Listing } from './Listing.js'
+import { Logger } from '../Logger.js'
 
 export class Datasource {
   constructor(name, link, selectors, hooks) {
@@ -11,6 +12,7 @@ export class Datasource {
     this.hooks = hooks;
   }
   async fetchListings() {
+    Logger.getInstance().info(`Fetching listings for ${this.name}`);
     let response;
     let dom;
     let html;
@@ -35,7 +37,9 @@ export class Datasource {
     dom = new JSDOM(html, { url: this.link, virtualConsole });
     const listingElements = dom.window.document.querySelectorAll(this.selectors._listingElements);
     const listings = [];
-    for (const listingElement of listingElements) {
+    for (let i = 0; i < listingElements.length; i++) {
+      Logger.getInstance().info(`Grabbing details for listing ${i + 1}/${listingElements.length}`);
+      const listingElement = listingElements[i];
       const detailsLinkElement = listingElement.querySelector(this.selectors._link.selector);
       const detailsLink = this.selectors._link.getProperty(detailsLinkElement);
       response = await fetch(detailsLink);
@@ -49,6 +53,7 @@ export class Datasource {
       }
 
       if (this.hooks?.postprocess) {
+        Logger.getInstance().info(`Postprocessing for listing ${i + 1}/${listingElements.length}`);
         const postprocessedListing = await this.hooks.postprocess(listing); 
         listings.push(postprocessedListing);
       } else {

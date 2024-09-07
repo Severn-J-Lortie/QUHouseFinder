@@ -1,4 +1,3 @@
-import { createRequire } from 'node:module';
 import { HfInference } from '@huggingface/inference'
 import { Model } from './Model.js';
 
@@ -8,9 +7,11 @@ export class HFClient {
     if (HFClient.#instance) {
       throw new Error('Use getInstance()');
     }
-    const require = createRequire(import.meta.url);
-    const accessToken = require('./token.json');
-    this.hf = new HfInference(accessToken.token);
+    if (!process.env.QU_HF_CLIENT_TOKEN) {
+      throw new Error('No HF Client token found in environment');
+    }
+    const accessToken = process.env.QU_HF_CLIENT_TOKEN;
+    this.hf = new HfInference(accessToken);
     this.model = new Model();
     HFClient.#instance = this;
   }
@@ -18,7 +19,7 @@ export class HFClient {
     const messages = this.model.createPrompt(fields, content);
 
     const result = await this.hf.chatCompletion({
-      model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+      model: Model.MODEL,
       messages
     })
     return JSON.parse(result.choices[0].message.content);

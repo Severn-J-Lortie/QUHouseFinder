@@ -43,9 +43,6 @@ export class QueensCommunityHousing extends Datasource {
           </table>
           `;
           return fullTableHtml;
-        },
-        postprocess: async (listing) => {
-          
         }
       }
     );

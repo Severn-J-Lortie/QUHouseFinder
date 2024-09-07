@@ -83,7 +83,7 @@ export class Listing {
             property = property.replaceAll(/[^0-9.]/g, '');
             this[key] = Number(property);
           } else {
-            this[key] = property;
+            this[key] = property.trim();
           }
         }
       }

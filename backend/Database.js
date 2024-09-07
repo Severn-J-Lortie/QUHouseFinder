@@ -1,5 +1,5 @@
 import pg from 'pg';
-const { Client } = pg;
+const { Pool } = pg;
 
 export class Database {
 
@@ -9,22 +9,27 @@ export class Database {
     if (Database.#instance) {
       throw new Error('Must call getInstance');
     }
-  }
-  async connect(user, host, database) {
-    this.client = new Client({
-      user,
-      host,
-      database,
-      password: '',
-      port: 5432
+    if (!(process.env.QU_DB_USER 
+          && process.env.QU_DB_DATABASE 
+          && process.env.QU_DB_PORT)) {
+      throw new Error(
+`One or more DB environment variables missing. Required are: QU_DB_USER, QU_DB_DATABASE, QU_DB_PORT`);
+    }
+    const pool = new Pool({
+      user: process.env.QU_DB_USER,
+      host: 'localhost',
+      database: process.env.QU_DB_DATABASE,
+      port: process.env.QU_DB_PORT,
+      max: 10
     });
-    await this.client.connect();
+    this.pool = pool;
+    Database.#instance = this;
   }
-  async query(queryString, values) {
-    return (await this.client.query(queryString, values)).rows;
+  async connect() {
+    return (await this.pool.connect());
   }
-  close() {
-    this.client.end();
+  async close() {
+    await this.pool.end();
   }
   static getInstance() {
     if (!Database.#instance) {
