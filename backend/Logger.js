@@ -7,6 +7,9 @@ export class Logger {
       throw new Error('Call getInstance()');
     }
     this.logFilePath = process.env.QU_LOG_PATH;
+    if (!this.logFilePath) {
+      throw new Error('Need to specify log file path with environment variable QU_LOG_PATH');
+    }
     if (!fs.existsSync(this.logFilePath)) {
       fs.writeFileSync(this.logFilePath, '', 'utf-8');
     }
@@ -19,10 +22,16 @@ export class Logger {
     return Logger.#instance;
   }
   info(message) {
-    this.#writeToFile(`INFO: ${message}`);
+    let logStr = `INFO: ${message}`;
+    if (process.env.QU_DEBUG) {
+      console.log(logStr);
+    }
+    this.#writeToFile(logStr);
   }
   err(message) {
-    this.#writeToFile(`ERR: ${message}`);
+    let logStr = `ERR: ${message}`;
+    console.log(logStr);
+    this.#writeToFile(logStr);
   }
   #getDateAndTimeString() {
     const now = new Date();
@@ -31,9 +40,6 @@ export class Logger {
     return `[${datePart} ${timePart}]`;
   }
   #writeToFile(string) {
-    if (process.env.QU_DEBUG) {
-      console.log(string);
-    }
     fs.appendFileSync(this.logFilePath, `${this.#getDateAndTimeString()} ${string}\n`, 'utf-8');
   }
 }

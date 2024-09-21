@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
-
+import { Logger } from '../Logger.js'
+import dateParser from 'any-date-parser';
 export class Listing {
   constructor(data, dataType, selectors) {
     this.data = data;
-    this.dataType = dataType;
     this.selectors = selectors;
     this.hash = null;
     this.address = null;
@@ -61,33 +61,52 @@ export class Listing {
   }
   #populateFromData() {
     const numericProperties = ['totalPrice', 'pricePerBed', 'beds', 'baths'];
-    if (this.dataType === 'dom') {
-      for (const key in this.selectors) {
-        if (!key.startsWith('_')) {
-          let selector;
-          let getProperty;
-          if (this.selectors[key] instanceof Object) {
-            selector = this.selectors[key].selector;
-            getProperty = this.selectors[key].getProperty;
-          } else {
-            selector = this.selectors[key];
-          }
-          const element = this.data.querySelector(selector);
-          let property;
-          if (getProperty) {
-            property = getProperty(element);
-          } else {
-            property = element.textContent;
-          }
-          if (numericProperties.includes(key)) {
-            property = property.replaceAll(/[^0-9.]/g, '');
-            this[key] = Number(property);
-          } else {
-            this[key] = property.trim();
-          }
+
+    for (const key in this.selectors) {
+      if (!key.startsWith('_')) {
+        let selector;
+        let getProperty;
+        if (this.selectors[key] instanceof Object) {
+          selector = this.selectors[key].selector;
+          getProperty = this.selectors[key].getProperty;
+        } else {
+          selector = this.selectors[key];
         }
+        const element = this.data.querySelector(selector);
+        let property;
+        if (getProperty) {
+          property = getProperty(element);
+        } else {
+          property = element.textContent;
+        }
+        if (numericProperties.includes(key)) {
+          property = property.replaceAll(/[^0-9.]/g, '');
+          property = Number(property);
+          // If numeric properties are falsey (0 included since beds, baths, rent, etc... are not going to be 0)
+          // then we were unable to find them. Mark as null.
+          if (!property) {
+            property = null;
+          }
+        } else if (key === 'leaseStartDate') {
+          // TODO: Check against larger list of words for "right now"
+          if (property.toLowerCase().trim() === 'immediate') {
+            property = 'now';
+          }
+          let date;
+          date = dateParser.fromString(property)
+          if (date.invalid) {
+            property = null;
+            Logger.getInstance().err(`Couldn't convert "${property}" to Date`);
+          } else {
+            property = date.toISOString().split('T')[0];
+          }
+        } else {
+          property = property.trim().replace(/\n{2,}/g, '\n');
+        }
+        this[key] = property;
       }
     }
+
 
     const keysToHash = [
       'address',
@@ -111,6 +130,11 @@ export class Listing {
     const hash = createHash('sha256');
     this.hash = hash.update(hashString).digest('hex');
 
-    this.pricePerBed = this.totalPrice / this.beds;
+    if (this.totalPrice && this.beds) {
+      this.pricePerBed = this.totalPrice / this.beds;
+      if (this.pricePerBed <= 500) {
+        this.pricePerBed = this.totalPrice;
+      }
+    }
   }
 }

@@ -49,16 +49,22 @@ export class Datasource {
       listing.landlord = this.name;
       listing.link = detailsLink;
       if (!this.selectors.rentalType) {
-        listing.rentalType = 'rental';
+        listing.rentalType = 'House';
       }
 
+      let finalListing;
       if (this.hooks?.postprocess) {
         Logger.getInstance().info(`Postprocessing for listing ${i + 1}/${listingElements.length}`);
-        const postprocessedListing = await this.hooks.postprocess(listing); 
-        listings.push(postprocessedListing);
+        try {
+          finalListing = await this.hooks.postprocess(listing); 
+        } catch (error) {
+          Logger.getInstance().err(`Postprocessing failed for listing ${i + 1}. ${error.stack}`);
+          finalListing = listing;
+        }
       } else {
-        listings.push(listing);
+        finalListing = listing;
       }
+      listings.push(finalListing);
     }
     return listings;
   }

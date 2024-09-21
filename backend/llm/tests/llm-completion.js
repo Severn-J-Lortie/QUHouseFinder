@@ -11,6 +11,5 @@ Parks and Bus Routes are around the corner. And only 9km to SLC and 10km to Down
 $2400 plus utilities. Available NOW! 12 month lease and then month-to-month at the tenant's option.
 `;
   const result = await hfClient.generateCompletion(['leaseStartDate'], examplePost);
-  console.log(result);
 }
 main();

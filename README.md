@@ -15,5 +15,7 @@ All of Kingston's student listings, aggregated in one place.
 
 ## TODO
 
-- Front end
-- CRUD backend for the front end
+- Add login
+- Filter CRUD (e.g. users can adda filter to be notifed on and change/delete it)
+    - Backend support involes pushing the filter object to the database
+- Add emails when filters change

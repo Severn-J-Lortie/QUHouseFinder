@@ -15,13 +15,15 @@ export class HFClient {
     this.model = new Model();
     HFClient.#instance = this;
   }
-  async generateCompletion(fields, content) {
+  async extractInformation(fields, content) {
     const messages = this.model.createPrompt(fields, content);
-
     const result = await this.hf.chatCompletion({
       model: Model.MODEL,
-      messages
-    })
+      messages,
+      max_tokens: 5000,
+      temperature: 0.1,
+      seed: 0
+    });
     return JSON.parse(result.choices[0].message.content);
   }
   static getInstance() {

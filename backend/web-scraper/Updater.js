@@ -18,6 +18,7 @@ export class Updater {
   }
   async update() {
     const db = await Database.getInstance().connect();
+    await db.query('DELETE FROM listings WHERE true;');
     let listings = [];
     for (const datasource of this.datasources) {
       try {
@@ -26,7 +27,7 @@ export class Updater {
       } catch (error) {
         Logger.getInstance().info(
 `Error while fetching listings for ${datasource.name}: ${error.message}.
-Stack: ${erorr.stack}`);
+Stack: ${error.stack}`);
       }
     }
     for (const listing of listings) {
