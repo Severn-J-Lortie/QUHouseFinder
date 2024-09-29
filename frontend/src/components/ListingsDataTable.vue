@@ -40,13 +40,14 @@ function formatDate(dateString) {
 
 <template>
   <div class="card">
+    <header>
+      <h1>
+        <i class="pi pi-home" style="font-size: 1.7rem"></i>
+        Current Listings
+      </h1>
+    </header>
     <DataTable v-model:filters="filters" v-model:expandedRows="expandedRows" :value="listingsStore.listings" paginator
       :rows="10" dataKey="hash" tableStyle="min-width: 60rem" filterDisplay="row">
-      <template #header>
-          <div class="justify-end">
-              <Button>Get Notified</Button>
-          </div>
-      </template>
       <template #expansion="slotProps">
         <h3>More Info </h3>
         <ul>
