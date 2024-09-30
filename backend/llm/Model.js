@@ -6,7 +6,7 @@ export class Model {
       leaseStartDate: 
 `leaseStartDate: <lease start date>. The date field should be populated with a date 
 of the form Month, Day, Year. E.g. September 1, 2024. If the listing is available "now" or
-"immediately", then put "now" as the value of leaseStartDate`,
+"immediately", then put today's date. If a year isn't provided, assume the current year.`,
       rent: 'rent: <rent>',
       beds: 'beds: <number of beds>\n',
       rentalType: 'rentalType: <sublet/lease>\n',
@@ -24,8 +24,14 @@ of the form Month, Day, Year. E.g. September 1, 2024. If the listing is availabl
       }
     }
 
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
     const taskMessage =
-`Your task is to extract specific details from the text the user provides. 
+`
+Today's date: ${formattedDate}.
+
+Your task is to extract specific details from the text the user provides. 
 Respond only with the details in the exact format they specify, with no 
 additional comments, explanations, or reasoning. If you can't find a 
 specific detail, or if you are unsure, just use "null" for that field.

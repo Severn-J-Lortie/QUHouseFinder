@@ -8,8 +8,9 @@ Parking is provided. The laundry has a free-use washer/dryer in the basement. It
 can grow your own garden. Lawncare is included. It is close to major shopping areas - it is only 600m to The Bayridge
 Center (Metro Supermarket/Shoppers Drug Mart) and 2.5km to the Gardiners Road and the Cataraqui Centre Mall. Schools,
 Parks and Bus Routes are around the corner. And only 9km to SLC and 10km to Downtown Kingston and Queen's University.
-$2400 plus utilities. Available NOW! 12 month lease and then month-to-month at the tenant's option.
+$2400 plus utilities. Available October 1st! 12 month lease and then month-to-month at the tenant's option.
 `;
-  const result = await hfClient.generateCompletion(['leaseStartDate'], examplePost);
+  const result = await hfClient.extractInformation(['leaseStartDate'], examplePost);
+  console.log(result)
 }
 main();
