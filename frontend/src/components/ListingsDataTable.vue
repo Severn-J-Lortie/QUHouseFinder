@@ -2,17 +2,34 @@
 import { ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useListingsStore } from '@/stores/listings';
+import { useFiltersStore } from '@/stores/filters';
+import { useUserStore } from '@/stores/user';
+import { useToast } from "primevue/usetoast";
+
+const toast = useToast();
 const listingsStore = useListingsStore();
+const filtersStore = useFiltersStore();
+const userStore = useUserStore();
+
+// TODO: Add loading animation
 listingsStore.fetchListings();
 
 const expandedRows = ref({});
 const filters = ref({
   address: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  beds: { value: null, matchMode: "FilterMatchMode.EQUALS" },
+  beds: { value: null, matchMode: FilterMatchMode.EQUALS },
   priceperbed: { value: null, matchMode: FilterMatchMode.LESS_THAN_OR_EQUAL_TO },
   rentaltype: { value: null, matchMode: FilterMatchMode.EQUALS },
-  leasestartdate: { value: null, matchMode: FilterMatchMode.EQUALS },
+  leasestartdate: { value: null, matchMode: FilterMatchMode.DATE_IS },
 });
+
+async function saveFilter() {
+  try {
+    await filtersStore.saveFilter(filters.value);
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Error', detail: `Unable to save filter: ${error.message}`, life: 3000 });
+  }
+}
 
 const rentalTypes = ref([
   'Sublet',
@@ -36,9 +53,11 @@ function formatDate(dateString) {
     });
   }
 }
+
 </script>
 
 <template>
+  <Toast />
   <div class="card">
     <header>
       <h1>
@@ -92,7 +111,12 @@ function formatDate(dateString) {
             @date-select="filterCallback" />
         </template>
       </Column>
-      <Column header="Link">
+      <Column header="Link" :show-filter-menu="false">
+        <template #filter>
+          <Button @click="saveFilter()" :severity="userStore.signedIn ? 'primary' : 'secondary'">
+            {{ userStore.signedIn ? 'Save Filter' : 'Login to Save Filters' }}
+          </Button>
+        </template>
         <template #body="{ data }">
           <Button link as="a" :label="data.landlord" :href="data.link" target="_blank" rel="noopener"
             style="padding: unset;"></Button>

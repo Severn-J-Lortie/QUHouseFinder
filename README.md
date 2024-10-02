@@ -14,8 +14,9 @@ All of Kingston's student listings, aggregated in one place.
 - Queen's Community Housing ✅
 
 ## TODO
-
-- Add login
-- Filter CRUD (e.g. users can adda filter to be notifed on and change/delete it)
+- Forgot password, delete account
+- Add user UIDs via getUser endpoint 
+- Persistent session storage
+- Filter CRUD (e.g. users can add a filter to be notifed on and change/delete it)
     - Backend support involes pushing the filter object to the database
 - Add emails when filters change

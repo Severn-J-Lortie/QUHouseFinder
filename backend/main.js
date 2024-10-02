@@ -3,19 +3,15 @@ import session from 'express-session';
 import bcrypt from 'bcryptjs';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { uid } from 'uid';
 import { Database } from './Database.js';
 import { Logger } from './Logger.js';
 import { requireLengthGreaterThan, requireValidEmail, requireType } from './ValidationHelpers.js';
 
 async function main() {
   dotenv.config();
-  const app = express();
-  app.use(cors());
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.json());
 
   const logger = Logger.getInstance();
-
   let platform = process.env['QU_PLATFORM'];
   if (platform && !(platform === 'production' || platform === 'development')) {
     throw new Error('Invalid platform specified in QU_PLATFORM');
@@ -23,6 +19,15 @@ async function main() {
     platform = 'development';
   }
   logger.info(`Running in mode: ${platform}`);
+
+  const app = express();
+  app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:5173'
+  }));
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
+
 
   if (!process.env['QU_SESSION_SECRET']) {
     throw new Error('Need to provide session secret key in QU_SESSION_SECRET');
@@ -34,8 +39,10 @@ async function main() {
     resave: false,
     saveUninitialized: true,
     cookie: { 
-      secure: platform === 'production',
-      maxAge: sessionMaxAge
+      secure: false,
+      maxAge: sessionMaxAge,
+      httpOnly: true,
+      sameSite: 'none'
     }
   }));
 
@@ -78,10 +85,12 @@ async function main() {
         res.status(400).json({success: false, errorMessage: `User with email ${email} is already registered`});
         return;
       }
-      result = await db.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) returning ID',
-        [name, email, hashedPassword]
+      const id = uid();
+      result = await db.query('INSERT INTO users (id, name, email, password) VALUES ($1, $2, $3, $4)',
+        [id, name, email, hashedPassword]
       );
-      logger.info(`Registered user name: ${name}, email: ${email}, id: ${result.rows[0].id}`);
+      logger.info(`Registered user name: ${name}, email: ${email}, id: ${id}`);
+      res.status(200).json({success: true});
     } catch (error) {
       logger.err(`Error registering user: ${error.stack}`);
       res.status(500).json({success: false, errorMessage: 'Error occured while registering user'});
@@ -98,7 +107,6 @@ async function main() {
     const user = result.rows[0];
     if (user && await bcrypt.compare(password, user.password)) {
       req.session.userId = user.id;
-      req.session.userName = user.name;
       res.status(200).json({success: true});
     } else {
       res.status(400).json({success: false, errorMessage: 'Invalid email or password'});
@@ -112,6 +120,101 @@ async function main() {
         }
         res.status(200).json({success: true});
     });
+  });
+
+  app.post('/savefilter', async (req, res) => {
+    if (!req.session.userId) {
+      res.status(401).json({success: false, errorMessage: 'Not authorized'});
+      return;
+    }
+
+    const { filter } = req.body;
+    if (!filter) {
+      res.status(400).json({success: false, errorMessage: 'Filter not specified'});
+      return;
+    }
+    if (typeof filter !== 'object') {
+      res.status(400).json({success: false, errorMessage: 'Filter is wrong type'});
+      return;
+    }
+
+    const filterSchema = {
+      columnKeys: ['value', 'matchMode'],
+      requiredKeys: ['address', 'beds', 'priceperbed', 'rentaltype', 'leasestartdate'],
+      address: { dataType: 'string' },
+      beds: { dataType: 'number' },
+      priceperbed: { dataType: 'number' },
+      rentaltype: { dataType: 'string' },
+      leasestartdate: { dataType: 'date' }
+    }
+    const allowableFilterModes = {
+      string: ['contains', 'notContains', 'startsWith', 'endsWith', 'equals', 'notEquals'],
+      number: ['equals', 'notEquals', 'lt', 'lte', 'gt', 'gte'],
+      date: ['dateIs', 'dateIsNot', 'dateBefore', 'dateAfter']
+    }
+
+    if (Object.keys(filter).length !== filterSchema.requiredKeys.length) {
+      res.status(400).json({success: false, errorMessage: 'Invalid filter: incorrect number of columns'});
+      return;
+    }
+    if (!filterSchema.requiredKeys.every(key => Object.keys(filter).includes(key))) {
+      res.status(400).json({success: false, errorMessage: 'Invalid filter: incorrect columns'});
+      return;
+    }
+    for (const key in filter) {
+      const column = filter[key];
+      if (Object.keys(column).length !== filterSchema.columnKeys.length) {
+        res.status(400).json({success: false, errorMessage: `Invalid filter: column ${key} has incorrect number of fields`});
+        return;
+      }
+      if (!filterSchema.columnKeys.every(key => Object.keys(column).includes(key))) {
+        res.status(400).json({success: false, errorMessage: `Invalid filter: column ${key} has incorrect fields`});
+        return;
+      }
+      const dataType = filterSchema[key].dataType;
+      const filterModesForDataType = allowableFilterModes[dataType];
+      if (!filterModesForDataType.includes(column.matchMode)) {
+        res.status(400).json({success: false, errorMessage: `Invalid filter: column ${key} has invalid matchMode`});
+        return;
+      }
+    }
+    const maxAllowedFilters = 5;
+    let userFilters;
+    try {
+      userFilters = await db.query('SELECT COUNT(*) FROM filters WHERE userid = $1', [req.session.userId]);
+      if (userFilters.rows[0].count > maxAllowedFilters) {
+        res.status(400).json({success: false, errorMessage: 'Your account has exceeded the maximum number of filters.'});
+        return;
+      }
+    } catch (error) {
+      logger.err(`Failed to fetch filters associated with user: ${error.stack}`);
+      res.status(500).json({success: false, errorMessage: 'Error occured while fetching user filters. Please try again'});
+      return;
+    }
+
+    try {
+      const id = uid();
+      await db.query('INSERT INTO filters (id, userid, filter, previousmatches) VALUES ($1, $2, $3, $4)',
+        [id, req.session.userId, filter, 0]);
+      res.status(200).json({success: true, id});
+    } catch (error) {
+      logger.err(`Failed to insert filter: ${error.stack}`);
+      res.status(500).json({success: false, errorMessage: 'Error occured while saving filter. Please try again'});
+    }
+  });
+
+  app.get('/filters', async (req, res) => {
+    if (!req.session.userId) {
+      res.status(401).json({success: false, errorMessage: 'Not authorized'});
+      return;
+    }
+    try {
+      const result = await db.query('SELECT * FROM filters WHERE userid = $1', [req.session.userId]);
+      res.status(200).json({success: true, filters: result.rows});
+    } catch (error) {
+      logger.err(`Error retrieving user filters ${error.stack}`);
+      res.status(500).json({success: false, errorMessage: 'Error while fetching filters. Please try again'});
+    }
   });
 
 

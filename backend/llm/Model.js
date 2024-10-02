@@ -1,5 +1,5 @@
 export class Model {
-  static MODEL = 'meta-llama/Meta-Llama-3.1-8B-Instruct';
+  static MODEL = 'llama3.2:3b-instruct-fp16';
 
   createPrompt(fields, content) {
     const fieldDescriptors = {

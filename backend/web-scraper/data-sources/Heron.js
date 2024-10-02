@@ -1,5 +1,5 @@
 import { Datasource } from '../Datasource.js';
-import { HFClient } from '../../llm/HFClient.js';
+import { ollamaClient } from '../../llm/OllamaClient.js';
 import dateParser from 'any-date-parser';
 export class Heron extends Datasource {
   constructor() {
@@ -20,8 +20,8 @@ export class Heron extends Datasource {
     }
     super('Heron Management', 'https://mipprental.com/C00185', selectors, {
       postprocess: async (listing) => {
-        const hfClient = HFClient.getInstance();
-        const response = await hfClient.extractInformation(['leaseStartDate'], listing.description);
+        const ollamaClient = OllamaClient.getInstance();
+        const response = await ollamaClient.extractInformation(['leaseStartDate'], listing.description);
         const date = dateParser.fromString(response.leaseStartDate);
         if (date.invalid) {
           listing.leaseStartDate = null;

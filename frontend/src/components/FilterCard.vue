@@ -8,8 +8,11 @@
         <i class="pi pi-bell" style="font-size: 1.7rem"></i>
         Notify Me
       </h1>
-      <p>Get emails when new listings show up under this filter</p>
+      <p>Get emails when new listings show up under your saved filters</p>
     </header>
+    <RouterLink to="/login">
+      <Button>Signup/Login</Button>
+    </RouterLink>
   </div>
 </template>
 

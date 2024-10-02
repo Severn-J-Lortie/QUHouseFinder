@@ -1,5 +1,5 @@
 import { Datasource } from '../Datasource.js';
-import { HFClient } from '../../llm/HFClient.js'
+import { OllamaClient } from '../../llm/OllamaClient.js'
 export class Frontenac extends Datasource {
   constructor() {
     const selectors = {
@@ -21,8 +21,8 @@ export class Frontenac extends Datasource {
       selectors,
       {
         postprocess: async (listing) => {
-          const hfClient = HFClient.getInstance();
-          const response = await hfClient.extractInformation(['address'], listing.address);
+          const ollamaClient = OllamaClient.getInstance();
+          const response = await ollamaClient.extractInformation(['address'], listing.address);
           listing.address = response.address;
           return listing;
       }
