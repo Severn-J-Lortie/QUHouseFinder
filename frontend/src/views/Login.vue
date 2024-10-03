@@ -41,7 +41,7 @@ async function login() {
     loginFeedback.value = 'Please enter your password';
     return;
   }
-  const loginResponseJSON = await fetch('http://localhost:8080/login', {
+  const loginResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ async function signup() {
     signupFeedback.value = 'Please enter your password';
     return;
   }
-  const signupResponseJSON = await fetch('http://localhost:8080/register', {
+  const signupResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/register`, {
     method: 'POST',
     headers: {
       "Content-Type": "application/json",

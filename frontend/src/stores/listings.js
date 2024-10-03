@@ -1,11 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import quconfig from '../../quconfig.json';
 
 export const useListingsStore = defineStore('listings', () => {
   const listings = ref([]);
   async function fetchListings() {
-    const response = await fetch(`${quconfig.backendLocation}/listings`);
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/listings`);
     const listingsStringDate = await response.json();
     for (const listing of listingsStringDate) {
       listing.leasestartdate = new Date(listing.leasestartdate);

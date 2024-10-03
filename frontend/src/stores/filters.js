@@ -1,11 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import quconfig from '../../quconfig.json';
 
 export const useFiltersStore = defineStore('filters', () => {
   const filters = ref([]);
   async function saveFilter(filterObj) {
-    const resultResponse = await fetch(`${quconfig.backendLocation}/saveFilter`, {
+    const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/saveFilter`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -21,7 +20,7 @@ export const useFiltersStore = defineStore('filters', () => {
     filters.value.push(filterObj);
   }
   async function fetchFilters() {
-    const filtersResponse = await fetch(`${quconfig.backendLocation}/filters`, {
+    const filtersResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters`, {
       credentials: 'include'
     });
     const filters = await filtersResponse.json();

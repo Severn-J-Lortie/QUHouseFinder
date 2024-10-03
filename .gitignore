@@ -31,3 +31,5 @@ Thumbs.db
 # VS Code settings directory and other IDE-specific directories
 .vscode/
 tmp
+
+certs

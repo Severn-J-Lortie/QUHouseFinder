@@ -1,3 +1,7 @@
+import fs from 'node:fs';
+import https from 'node:https';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import express from 'express';
 import session from 'express-session';
 import bcrypt from 'bcryptjs';
@@ -9,7 +13,8 @@ import { Logger } from './Logger.js';
 import { requireLengthGreaterThan, requireValidEmail, requireType } from './ValidationHelpers.js';
 
 async function main() {
-  dotenv.config();
+  const dirname = path.dirname(fileURLToPath(import.meta.url));
+  dotenv.config({ path: path.resolve(dirname, '../.env') });
 
   const logger = Logger.getInstance();
   let platform = process.env['QU_PLATFORM'];
@@ -20,10 +25,18 @@ async function main() {
   }
   logger.info(`Running in mode: ${platform}`);
 
+  if (!(process.env['QU_CERT_PATH'] && process.env['QU_KEY_PATH'])) {
+    throw new Error('Need to specify cert and key path.');
+  }
+
+  const httpsServerOptions = {
+    key: fs.readFileSync(process.env['QU_KEY_PATH']),
+    cert: fs.readFileSync(process.env['QU_CERT_PATH']),
+  };
+
   const app = express();
   app.use(cors({
-    credentials: true,
-    origin: 'http://localhost:5173'
+    credentials: true
   }));
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
@@ -49,6 +62,7 @@ async function main() {
   const db = await Database.getInstance().connect();
 
   app.get('/', (req, res) => {
+    console.log("SHSHSH")
     res.send('QUHouseFinder is running.');
   });
   app.get('/listings', async (req, res) => {
@@ -218,11 +232,13 @@ async function main() {
   });
 
 
-  if (process.env['QU_BACKEND_PORT']) {
-    app.listen(Number(process.env['QU_BACKEND_PORT']));
-  } else {
-    app.listen(8080);
-  }
+  const defaultPort = 8080;
+  let listenPort = process.env['QU_BACKEND_PORT'] || defaultPort;
+
+  // Create the HTTPS server
+  https.createServer(httpsServerOptions, app).listen(listenPort, () => {
+    logger.info(`Server is starting on port ${listenPort}`);
+  });
 }
 main();
 
