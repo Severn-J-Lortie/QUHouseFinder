@@ -46,6 +46,7 @@ async function login() {
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: JSON.stringify({
       email: loginInfo.value.email,
       password: loginInfo.value.password
@@ -79,6 +80,7 @@ async function signup() {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: 'include',
     body: JSON.stringify({
       name: signupInfo.value.name,
       email: signupInfo.value.email,

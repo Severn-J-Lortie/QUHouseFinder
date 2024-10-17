@@ -36,7 +36,10 @@ async function main() {
 
   const app = express();
   app.use(cors({
-    credentials: true
+    origin: process.env['QU_FRONTEND_LOCATION'] || 'https://localhost:5173',
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   }));
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
@@ -52,7 +55,7 @@ async function main() {
     resave: false,
     saveUninitialized: true,
     cookie: { 
-      secure: false,
+      secure: true,
       maxAge: sessionMaxAge,
       httpOnly: true,
       sameSite: 'none'
@@ -113,7 +116,7 @@ async function main() {
 
   app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    if (!requireType([email, password], 'string')) {
+      if (!requireType([email, password], 'string')) {
       res.status(400).send({success: false, errorMessage: 'Invalid or missing field'});
       return;
     };
@@ -231,6 +234,13 @@ async function main() {
     }
   });
 
+  app.get('/me', (req, res) => {
+    if (!req.session.userId) {
+      res.status(200).json({success: true, loggedIn: false});
+      return;
+    }
+    res.status(200).json({ success: true, loggedIn: true});
+  })
 
   const defaultPort = 8080;
   let listenPort = process.env['QU_BACKEND_PORT'] || defaultPort;
