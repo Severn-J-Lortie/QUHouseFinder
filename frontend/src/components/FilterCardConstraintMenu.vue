@@ -1,9 +1,21 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-const { dataType = 'string' } = defineProps({
-  dataType: String
+const { dataType, modelValue } = defineProps({
+  dataType: String,
+  modelValue: String
 });
+
+const localConstraint = ref(modelValue);
+watch(() => modelValue, (newValue) => {
+  localConstraint.value = newValue;
+});
+const updateParent = () => {
+  console.log('gggg')
+  emit('update:modelValue', localConstraint.value)
+}
+
+const emit = defineEmits(['update:modelValue']);
 
 const filterConstraints = ref({
   string: [
@@ -35,18 +47,18 @@ const filterConstraints = ref({
 
 const op = ref();
 const toggle = (event) => {
-    op.value.toggle(event);
+  op.value.toggle(event);
 }
-const selectedConstraint = ref();
 </script>
 
 <template>
-  <Button icon="pi pi-filter" @click="toggle" text rounded severity="secondary"/>
+  <Button icon="pi pi-filter" @click="toggle" text rounded severity="secondary" />
   <Popover ref="op" class="constraints-popover">
     <ul id="constraint-list">
       <li v-for="filterConstraint in filterConstraints[dataType]">
-        <Divider v-if="filterConstraint.matchMode === null" class="list-divider"/>
-        <Button text style="width: 100%; text-align: left">
+        <Divider v-if="filterConstraint.matchMode === null" class="list-divider" />
+        <Button :text="localConstraint !== filterConstraint.matchMode" style="width: 100%; text-align: left"
+          @click="localConstraint = filterConstraint.matchMode; updateParent(); toggle()">
           {{ filterConstraint.label }}
         </Button>
       </li>
@@ -61,16 +73,20 @@ const selectedConstraint = ref();
   margin-top: 0px;
   margin-bottom: 0px;
 }
+
 #constraint-list {
   text-align: left;
 }
+
 .p-popover-content {
   padding: 0px io !important;
 }
+
 .list-divider {
   margin-top: 3px;
   margin-bottom: 3px;
 }
+
 li .p-button {
   justify-content: flex-start;
   width: 100%;

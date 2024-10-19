@@ -2,23 +2,25 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
+import { useToast } from '@/hooks/useToast';
 
 const router = useRouter();
 const user = useUserStore();
+const toast = useToast();
 
 const loginInfo = ref({
   email: '',
-  password: ''
+  password: '',
 });
 
-const signupInfo = ref({
+const registerInfo = ref({
   name: '',
   email: '',
-  password: ''
+  password: '',
 });
 
 const loginFeedback = ref("");
-const signupFeedback = ref("");
+const registerFeedback = ref("");
 
 function requireValidEmail(value) {
   const emailRegex = /.+\@.+\..+/;
@@ -41,60 +43,35 @@ async function login() {
     loginFeedback.value = 'Please enter your password';
     return;
   }
-  const loginResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      email: loginInfo.value.email,
-      password: loginInfo.value.password
-    })
-  });
-  const loginResponse = await loginResponseJSON.json();
-  if (!loginResponse.success) {
-    loginFeedback.value = loginResponse.errorMessage;
-    return;
+  try {
+    await user.login(loginInfo.value.email, loginInfo.value.password);
+    router.push('/');
+    loginFeedback.value = '';
+  } catch (error) {
+    toast.add('Error', 'Login Error', error.message);
   }
-  loginFeedback.value = '';
-  router.push('/');
-  user.signedIn = true;
 }
 
-async function signup() {
-  if (!requireLengthGreaterThan(signupInfo.value.name, 0)) {
-    signupFeedback.value = 'Please provide a valid name';
+async function register() {
+  if (!requireLengthGreaterThan(registerInfo.value.name, 0)) {
+    registerFeedback.value = 'Please provide a valid name';
     return;
   }
-  if (!requireValidEmail(signupInfo.value.email)) {
-    signupFeedback.value = 'Please provide a valid email';
+  if (!requireValidEmail(registerInfo.value.email)) {
+    registerFeedback.value = 'Please provide a valid email';
     return;
   }
-  if (!requireLengthGreaterThan(signupInfo.value.password, 0)) {
-    signupFeedback.value = 'Please enter your password';
+  if (!requireLengthGreaterThan(registerInfo.value.password, 0)) {
+    registerFeedback.value = 'Please enter your password';
     return;
   }
-  const signupResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/register`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      name: signupInfo.value.name,
-      email: signupInfo.value.email,
-      password: signupInfo.value.password
-    })
-  });
-  const signupResponse = await signupResponseJSON.json();
-  if (!signupResponse.success) {
-    signupFeedback.value = signupResponse.errorMessage;
-    return;
+  try {
+    await user.register(registerInfo.value.email, registerInfo.value.password, registerInfo.value.name);
+    registerFeedback.value = '';
+    router.push('/');
+  } catch (error) {
+    toast.add('error', 'Signup Error', error.message);
   }
-  signupFeedback.value = '';
-  router.push('/');
-  user.signedIn = true;
 }
 
 </script>
@@ -109,8 +86,8 @@ async function signup() {
     </header>
     <div class="login-form">
       <div>
-        <InputText id="email" placeholder="Email" v-model="loginInfo.email" />
-        <InputText id="password" placeholder="Password" type="password" v-model="loginInfo.password" />
+        <InputText placeholder="Email" v-model="loginInfo.email" />
+        <InputText placeholder="Password" type="password" v-model="loginInfo.password" />
         <Button @click="login()">Login</Button>
         <div class="feedback">{{ loginFeedback }}</div>
       </div>
@@ -119,11 +96,11 @@ async function signup() {
     <divider/>
     <div class="login-form">
       <div>
-        <InputText id="name" placeholder="Name" v-model="signupInfo.name" />
-        <InputText id="email" placeholder="Email" v-model="signupInfo.email" />
-        <InputText id="password" placeholder="Password" type="password" v-model="signupInfo.password" />
-        <Button @click="signup()">Sign up</Button>
-        <div class="feedback">{{signupFeedback}}</div>
+        <InputText placeholder="Name" v-model="registerInfo.name" />
+        <InputText placeholder="Email" v-model="registerInfo.email" />
+        <InputText placeholder="Password" type="password" v-model="registerInfo.password" />
+        <Button @click="register()">Sign up</Button>
+        <div class="feedback">{{registerFeedback}}</div>
       </div>
     </div>
   </div>

@@ -4,14 +4,14 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { useListingsStore } from '@/stores/listings';
 import { useFiltersStore } from '@/stores/filters';
 import { useUserStore } from '@/stores/user';
-import { useToast } from "primevue/usetoast";
+import { useToast } from "@/hooks/useToast";
 
 const toast = useToast();
 const listingsStore = useListingsStore();
 const filtersStore = useFiltersStore();
-const userStore = useUserStore();
+const user = useUserStore();
 
-// TODO: Add loading animation
+// TODO: This should be top level await with a Suspense
 listingsStore.fetchListings();
 
 const expandedRows = ref({});
@@ -57,7 +57,6 @@ function formatDate(dateString) {
 </script>
 
 <template>
-  <Toast />
   <div class="card">
     <header>
       <h1>
@@ -113,8 +112,8 @@ function formatDate(dateString) {
       </Column>
       <Column header="Link" :show-filter-menu="false">
         <template #filter>
-          <Button @click="saveFilter()" :severity="userStore.signedIn ? 'primary' : 'secondary'">
-            {{ userStore.signedIn ? 'Save Filter' : 'Login to Save Filters' }}
+          <Button @click="saveFilter()" :disabled="!user.loggedIn">
+            {{ user.loggedIn ? 'Save Filter' : 'Login to Save Filters' }}
           </Button>
         </template>
         <template #body="{ data }">

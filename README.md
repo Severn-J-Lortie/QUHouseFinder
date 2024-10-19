@@ -15,8 +15,12 @@ All of Kingston's student listings, aggregated in one place.
 
 ## TODO
 - Forgot password, delete account
-- Add user UIDs via getUser endpoint 
 - Persistent session storage
 - Filter CRUD (e.g. users can add a filter to be notifed on and change/delete it)
     - Backend support involes pushing the filter object to the database
+    - Fetch filters on page load
+    - Delete filter support
+    - Edit filter support
+      - Factor out filer validation so that add and modify basically the same
 - Add emails when filters change
+  - Filter to SQL conversion
