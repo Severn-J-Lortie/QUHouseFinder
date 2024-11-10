@@ -4,6 +4,7 @@ const { Pool, types } = pg;
 export class Database {
 
   static #instance = null;
+  #pool = null;
 
   constructor() {
     if (Database.#instance) {
@@ -24,14 +25,17 @@ export class Database {
       port: process.env.QU_DB_PORT,
       max: 10
     });
-    this.pool = pool;
+    this.#pool = pool;
     Database.#instance = this;
   }
   async connect() {
-    return (await this.pool.connect());
+    return (await this.#pool.connect());
   }
   async close() {
-    await this.pool.end();
+    await this.#pool.end();
+  }
+  getPool() {
+    return this.#pool;
   }
   static getInstance() {
     if (!Database.#instance) {

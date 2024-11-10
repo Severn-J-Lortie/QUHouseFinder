@@ -28,6 +28,7 @@ async function saveFilter() {
     await filtersStore.saveFilter(filters.value);
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Error', detail: `Unable to save filter: ${error.message}`, life: 3000 });
+    console.error(error);
   }
 }
 

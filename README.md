@@ -15,12 +15,9 @@ All of Kingston's student listings, aggregated in one place.
 
 ## TODO
 - Forgot password, delete account
-- Persistent session storage
-- Filter CRUD (e.g. users can add a filter to be notifed on and change/delete it)
-    - Backend support involes pushing the filter object to the database
-    - Fetch filters on page load
-    - Delete filter support
-    - Edit filter support
-      - Factor out filer validation so that add and modify basically the same
 - Add emails when filters change
   - Filter to SQL conversion
+- Change: need to store the hashes of previous matches for each filter to truly tell if results changed
+- Change: need to not delete every entry at the beginning of each update. Instead, mark entries that aren't found
+          by the scraper again and wait a day or so before deleting them. If its from facebook (NYI datasource) then
+          let's wait more like 10 days since its a really volatile datasource.

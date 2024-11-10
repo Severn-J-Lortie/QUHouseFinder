@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import { Logger } from '../Logger.js';
 import { Database } from './Database.js';
 import indexRoutes from './routes/index.js';
@@ -16,7 +17,7 @@ const app = express();
 
 async function initApp() {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
-  dotenv.config({ path: path.resolve(dirname, '../.env') });
+  dotenv.config({ path: path.resolve(dirname, '../../.env') });
 
   const logger = Logger.getInstance();
   let platform = process.env['QU_PLATFORM'] || 'development';
@@ -39,8 +40,16 @@ async function initApp() {
     throw new Error('Need to provide session secret key in QU_SESSION_SECRET');
   }
 
+  const PgSession = connectPgSimple(session);
+
   const sessionMaxAge = 7 * 24 * 60 * 60 * 1000;
+  const db = await Database.getInstance().connect();
   app.use(session({
+    store: new PgSession({
+      pool: Database.getInstance().getPool(),
+      tableName: 'sessions',
+      createTableIfMissing: true
+    }),
     secret: process.env['QU_SESSION_SECRET'],
     resave: false,
     saveUninitialized: true,
@@ -52,7 +61,6 @@ async function initApp() {
     },
   }));
 
-  const db = await Database.getInstance().connect();
   app.use((req, res, next) => {
     req.db = db;
     next();

@@ -32,13 +32,6 @@ if (user.loggedIn) {
   }
 }
 
-async function updateFilters() {
-  for (const {id, fields} of filters.filters) {
-    await filters.updateFilter(id, fields)
-  }
-  toast.add('success', 'Update Successful', 'Your filters have been saved');
-}
-
 </script>
 
 <template>
@@ -53,7 +46,7 @@ async function updateFilters() {
     <RouterLink to="/login" v-if="!user.loggedIn">
       <Button>Signup/Login</Button>
     </RouterLink>
-    <div class="filter" v-for="{id, fields} in filters.filters">
+    <div class="filter" v-for="{ id, fields } in filters.filters">
       <div class="filter-field">
         <div>Address</div>
         <InputText placeholder="Address" v-model="fields.address.value" />
@@ -78,8 +71,13 @@ async function updateFilters() {
         <DatePicker dateFormat="dd/mm/yy" placeholder="dd/mm/yy" v-model="fields.leasestartdate.value" />
         <FilterCardConstraintMenu data-type="date" v-model="fields.leasestartdate.matchMode" />
       </div>
-      <div class="filter-field align-bottom">
-        <Button icon="pi pi-trash" text rounded severity="secondary" @click="filters.deleteFilter(id)" />
+      <div class="actions">
+        <div class="filter-field action">
+          <Button icon="pi pi-trash" text rounded severity="secondary" @click="filters.deleteFilter(id)" />
+        </div>
+        <div class="filter-field action">
+          <Button icon="pi pi-save" text rounded severity="secondary" @click="filters.saveFilter(id)" />
+        </div>
       </div>
     </div>
   </div>
@@ -107,8 +105,13 @@ async function updateFilters() {
   min-width: 130px;
 }
 
-.align-bottom {
-  align-self: flex-end;
+.actions .action {
+  margin-right: 0px;
 }
 
+.actions {
+  margin-left: 20px;
+  display: flex;
+  align-items: flex-end;
+}
 </style>

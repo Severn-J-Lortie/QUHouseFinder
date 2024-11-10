@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import { uid } from 'uid';
-import { Logger } from '../Logger.js';
+import { Logger } from '../../Logger.js';
 import { requireType, requireValidEmail, requireLengthGreaterThan } from '../validators/common.js';
 
 const router = express.Router();

@@ -1,6 +1,6 @@
 import express from 'express';
 import { uid } from 'uid';
-import { Logger } from '../Logger.js';
+import { Logger } from '../../Logger.js';
 import { validateFields } from '../validators/filters.js';
 
 const router = express.Router();

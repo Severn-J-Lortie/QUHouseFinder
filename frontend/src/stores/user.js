@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function login(email, password) {
-    const loginResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/login`, {
+    const loginResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function register(email, password, name) {
-    const registerResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/register`, {
+    const registerResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
