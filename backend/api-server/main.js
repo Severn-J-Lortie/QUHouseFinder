@@ -9,8 +9,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { uid } from 'uid';
 import { Database } from './Database.js';
-import { Logger } from './Logger.js';
-import { requireLengthGreaterThan, requireValidEmail, requireType } from './ValidationHelpers.js';
+import { Logger } from '../Logger.js';
+import { requireLengthGreaterThan, requireValidEmail, requireType } from '../ValidationHelpers.js';
 
 async function main() {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
