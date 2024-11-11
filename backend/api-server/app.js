@@ -6,7 +6,7 @@ import cors from 'cors';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import { Logger } from '../Logger.js';
-import { Database } from './Database.js';
+import { Database } from '../Database.js';
 import indexRoutes from './routes/index.js';
 import authRoutes from './routes/auth.js';
 import filterRoutes from './routes/filters.js';

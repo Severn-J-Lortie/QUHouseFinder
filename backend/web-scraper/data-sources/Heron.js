@@ -1,5 +1,5 @@
 import { Datasource } from '../Datasource.js';
-import { ollamaClient } from '../llm/OllamaClient.js';
+import { OllamaClient } from '../llm/OllamaClient.js';
 import dateParser from 'any-date-parser';
 export class Heron extends Datasource {
   constructor() {

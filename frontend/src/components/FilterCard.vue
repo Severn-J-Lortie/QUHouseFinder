@@ -28,8 +28,14 @@ if (user.loggedIn) {
   try {
     await filters.fetchFilters();
   } catch (error) {
-    toast.add({ severity: 'error', summary: 'Error', detail: `Unable to fetch filters: ${error.message}` });
+    toast.add('error','Error', `Unable to fetch filters: ${error.message}`);
+    console.error(error);
   }
+}
+
+function updateFilter(id, fields) {
+  filters.updateFilter(id, fields);
+  toast.add('success', 'Saved successfully')
 }
 
 </script>
@@ -76,7 +82,7 @@ if (user.loggedIn) {
           <Button icon="pi pi-trash" text rounded severity="secondary" @click="filters.deleteFilter(id)" />
         </div>
         <div class="filter-field action">
-          <Button icon="pi pi-save" text rounded severity="secondary" @click="filters.saveFilter(id)" />
+          <Button icon="pi pi-save" text rounded severity="secondary" @click="updateFilter(id, fields)" />
         </div>
       </div>
     </div>

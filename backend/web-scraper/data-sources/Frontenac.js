@@ -1,5 +1,5 @@
 import { Datasource } from '../Datasource.js';
-import { OllamaClient } from '../../llm/OllamaClient.js'
+import { OllamaClient } from '../llm/OllamaClient.js'
 export class Frontenac extends Datasource {
   constructor() {
     const selectors = {

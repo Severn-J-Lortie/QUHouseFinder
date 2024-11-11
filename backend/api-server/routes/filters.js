@@ -37,7 +37,7 @@ router.post('/save', async (req, res) => {
     const id = uid();
     await req.db.query(
       'INSERT INTO filters (id, userid, fields, previousmatches) VALUES ($1, $2, $3, $4)',
-      [id, req.session.userId, fields, 0]
+      [id, req.session.userId, fields, []]
     );
     res.status(200).json({ success: true, id });
   } catch (error) {

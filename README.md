@@ -17,7 +17,6 @@ All of Kingston's student listings, aggregated in one place.
 - Forgot password, delete account
 - Add emails when filters change
   - Filter to SQL conversion
-- Change: need to store the hashes of previous matches for each filter to truly tell if results changed
 - Change: need to not delete every entry at the beginning of each update. Instead, mark entries that aren't found
           by the scraper again and wait a day or so before deleting them. If its from facebook (NYI datasource) then
           let's wait more like 10 days since its a really volatile datasource.

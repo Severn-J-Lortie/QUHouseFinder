@@ -18,7 +18,6 @@ export class Updater {
   }
   async update() {
     const db = await Database.getInstance().connect();
-    await db.query('DELETE FROM listings WHERE true;');
     let listings = [];
     for (const datasource of this.datasources) {
       try {
@@ -26,13 +25,14 @@ export class Updater {
         listings = listings.concat(newListings);
       } catch (error) {
         Logger.getInstance().info(
-`Error while fetching listings for ${datasource.name}: ${error.message}.
+          `Error while fetching listings for ${datasource.name}: ${error.message}.
 Stack: ${error.stack}`);
       }
     }
+
     for (const listing of listings) {
       const listingSQL = listing.toSQL();
-      const queryString = `INSERT INTO ${this.tableName} ${listingSQL.queryString} ON CONFLICT (hash) DO NOTHING`;
+      const queryString = `INSERT INTO ${this.tableName} ${listingSQL.queryString} ON CONFLICT (hash) DO UPDATE SET lastseen = CURRENT_DATE`;
       await db.query(queryString, listingSQL.values);
     }
     db.release();

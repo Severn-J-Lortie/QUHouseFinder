@@ -3,6 +3,15 @@ import { defineStore } from 'pinia'
 
 export const useFiltersStore = defineStore('filters', () => {
   const filters = ref([]);
+
+  function removeReactivity(object) {
+    object = toRaw(object)
+    for (const key in object) {
+      object[key] = toRaw(object[key]);
+    }
+    return object;
+  }
+
   async function saveFilter(fields) {
     const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters/save`, {
       method: 'POST',
@@ -16,7 +25,7 @@ export const useFiltersStore = defineStore('filters', () => {
     if (!result.success) {
       throw new Error(result.errorMessage);
     }
-    filters.value.push({ id: result.id, fields: structuredClone(toRaw(fields)) });
+    filters.value.push({ id: result.id, fields: structuredClone(removeReactivity(fields)) });
   }
   async function updateFilter(id, fields) {
     const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters/update`, {
@@ -32,7 +41,7 @@ export const useFiltersStore = defineStore('filters', () => {
       throw new Error(result.errorMessage);
     }
     const filterIdx = filters.value.findIndex(filter => filter.id === id);
-    filters.value[filterIdx].fields = fields;
+    filters.value[filterIdx].fields = structuredClone(removeReactivity(fields));
   }
   async function deleteFilter(id) {
     const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters/delete`, {
