@@ -86,7 +86,6 @@ export class FilterExecutor {
     const filters = await this.#db.query('SELECT * FROM filters');
     for (const filter of filters.rows) {
       const { query: filterQuery , values: filterValues }= this.#queryFromFilterFields(filter.fields);
-      console.log(filterQuery, filterValues)
       let matchingListings = (await this.#db.query(filterQuery, filterValues)).rows;
       const matchingListingsHashes = matchingListings.map(listing => listing.hash);
       const newListings = matchingListings.filter(listing => !filter.previousmatches.includes(listing.hash));

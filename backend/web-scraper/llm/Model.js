@@ -5,7 +5,7 @@ export class Model {
     const fieldDescriptors = {
       leaseStartDate: 
 `leaseStartDate: <lease start date>. The date field should be populated with a date 
-of the form Month, Day, Year. E.g. September 1, 2024. If the listing is available "now" or
+of the form Month Day, Year. E.g. September 1, 2024. If the listing is available "now" or
 "immediately", then put today's date. If a year isn't provided, assume the current year.`,
       rent: 'rent: <rent>',
       beds: 'beds: <number of beds>\n',

@@ -57,7 +57,8 @@ export class Datasource {
       response = await fetch(detailsLink);
       html = await response.text();
       dom = new JSDOM(html, {url: detailsLink, virtualConsole});
-      const listing = new Listing(dom.window.document, 'dom', this.selectors);
+      const listing = new Listing();
+      listing.populateFromDOMElement(dom.window.document, this.selectors)
       listing.landlord = this.name;
       listing.link = detailsLink;
       if (!this.selectors.rentalType) {

@@ -2,9 +2,7 @@ import { createHash } from 'node:crypto';
 import { Logger } from '../Logger.js'
 import dateParser from 'any-date-parser';
 export class Listing {
-  constructor(data, dataType, selectors) {
-    this.data = data;
-    this.selectors = selectors;
+  constructor() {
     this.hash = null;
     this.address = null;
     this.landlord = null;
@@ -16,7 +14,6 @@ export class Listing {
     this.pricePerBed = null;
     this.beds = null;
     this.baths = null;
-    this.#populateFromData();
   }
   toSQL() {
     const propertiesToStore = [
@@ -59,20 +56,23 @@ export class Listing {
     queryString += ')';
     return { queryString, values: valuesToStore };
   }
-  #populateFromData() {
+  populateFromDOMElement(domElement, selectors) {
     const numericProperties = ['totalPrice', 'pricePerBed', 'beds', 'baths'];
 
-    for (const key in this.selectors) {
+    for (const key in selectors) {
       if (!key.startsWith('_')) {
         let selector;
         let getProperty;
-        if (this.selectors[key] instanceof Object) {
-          selector = this.selectors[key].selector;
-          getProperty = this.selectors[key].getProperty;
+        if (selectors[key] instanceof Object) {
+          selector = selectors[key].selector;
+          getProperty = selectors[key].getProperty;
         } else {
-          selector = this.selectors[key];
+          selector = selectors[key];
         }
-        const element = this.data.querySelector(selector);
+        const element = domElement.querySelector(selector);
+        if (!element) {
+          continue;
+        }
         let property;
         if (getProperty) {
           property = getProperty(element);
@@ -106,8 +106,18 @@ export class Listing {
         this[key] = property;
       }
     }
-
-
+    this.computeHash();
+    this.setPricePerBed(this.totalPrice, this.beds);
+  }
+  setPricePerBed(price, beds) {
+    if (this.totalPrice && this.beds) {
+      this.pricePerBed = price / beds;
+      if (this.pricePerBed <= 500) {
+        this.pricePerBed = price;
+      }
+    }
+  }
+  computeHash() {
     const keysToHash = [
       'address',
       'description',
@@ -129,12 +139,5 @@ export class Listing {
     }
     const hash = createHash('sha256');
     this.hash = hash.update(hashString).digest('hex');
-
-    if (this.totalPrice && this.beds) {
-      this.pricePerBed = this.totalPrice / this.beds;
-      if (this.pricePerBed <= 500) {
-        this.pricePerBed = this.totalPrice;
-      }
-    }
   }
 }
