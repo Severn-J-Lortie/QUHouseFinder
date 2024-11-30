@@ -1,20 +1,23 @@
 import fetch from 'node-fetch';
 import { Model } from './Model.js';
+import { Logger } from '../../Logger.js';
 
 export class OllamaClient {
   static #instance = null;
-  static #PORT = 11434;
-  static #HOST = 'localhost';
+  static #PORT = 0;
+  static #HOST = '';
   constructor() {
     if (OllamaClient.#instance) {
       throw new Error('Use getInstance()');
     }
-    if (process.env['QU_OLLAMA_PORT']) {
-      OllamaClient.#PORT = Number(process.env['QU_OLLAMA_PORT']);
+    if (!process.env['QU_OLLAMA_PORT']) {
+      throw new Error('Must specify an QU_OLLAMA_PORT environment variable');
     }
-    if (process.env['QU_OLLAMA_HOST']) {
-      OllamaClient.#HOST = process.env['QU_OLLAMA_HOST'];
+    if (!process.env['QU_OLLAMA_HOST']) {
+      throw new Error('Must specify an QU_OLLAMA_HOST environment variable');
     }
+    OllamaClient.#PORT = Number(process.env['QU_OLLAMA_PORT']);
+    OllamaClient.#HOST = process.env['QU_OLLAMA_HOST'];
     this.model = new Model();
     OllamaClient.#instance = this;
   }
@@ -26,10 +29,22 @@ export class OllamaClient {
         model: Model.MODEL,
         messages,
         stream: false,
-        format: 'json'
+        format: 'json',
+        options: {
+          temperature: 0.8,
+          seed: 100
+        }
       })
     });
     const responseJSON = await response.json();
+    let responseContent = responseJSON.message.content;
+    try {
+      responseContent = JSON.parse(responseContent);
+    } catch (error) {
+      Logger.getInstance().err(`Model failed to return properly formatted JSON. Got ${content}`);
+      throw error;
+    }
+    return responseContent;
   }
   static getInstance() {
     if (!OllamaClient.#instance) {

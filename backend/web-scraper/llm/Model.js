@@ -1,5 +1,5 @@
 export class Model {
-  static MODEL = 'llama3.2:3b-instruct-fp16';
+  static MODEL = 'gemma2:2b-instruct-fp16';
 
   createPrompt(fields, content) {
     const fieldDescriptors = {

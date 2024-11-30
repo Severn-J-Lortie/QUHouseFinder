@@ -35,7 +35,19 @@ export class Datasource {
     }
     virtualConsole.sendTo(noopConsole);
     dom = new JSDOM(html, { url: this.link, virtualConsole });
-    const listingElements = dom.window.document.querySelectorAll(this.selectors._listingElements);
+
+    let listingElements = [];
+    if (this.selectors._listingElements instanceof Object) {
+      const allListingElements = dom.window.document.querySelectorAll(this.selectors._listingElements.selector);
+      for (const listingElement of allListingElements) {
+        if (this.selectors._listingElements.filter(listingElement)) {
+          listingElements.push(listingElement);
+        }
+      }
+    } else {
+      listingElements = dom.window.document.querySelectorAll(this.selectors._listingElements);
+    }
+
     const listings = [];
     for (let i = 0; i < listingElements.length; i++) {
       Logger.getInstance().info(`Grabbing details for listing ${i + 1}/${listingElements.length}`);

@@ -4,7 +4,10 @@ export class Panadew extends Datasource {
   
   constructor() {
     const selectors = {
-      _listingElements: 'form div.four.columns.listingblockgrid.listingblock:not(:has(.banner))',
+      _listingElements: { 
+        selector: 'form div.four.columns.listingblockgrid.listingblock',
+        filter: listing => !listing.querySelector('div:nth-child(1) > a > div > div')
+      },
       _link: { selector: 'div > a', getProperty: el => el.href },
       address: '#title',
       rentalType: '#tab0 > ul > li:nth-child(2)',
