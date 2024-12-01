@@ -2,7 +2,12 @@ import { createHash } from 'node:crypto';
 import { Logger } from '../Logger.js'
 import dateParser from 'any-date-parser';
 export class Listing {
-  constructor() {
+  constructor(fields) {
+    if (fields) {
+      for (const key in fields) {
+        this[key] = field;
+      }
+    }
     this.hash = null;
     this.address = null;
     this.landlord = null;
