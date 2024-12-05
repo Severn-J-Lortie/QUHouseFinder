@@ -3,11 +3,6 @@ import { Logger } from '../Logger.js'
 import dateParser from 'any-date-parser';
 export class Listing {
   constructor(fields) {
-    if (fields) {
-      for (const key in fields) {
-        this[key] = field;
-      }
-    }
     this.hash = null;
     this.address = null;
     this.landlord = null;
@@ -19,6 +14,44 @@ export class Listing {
     this.pricePerBed = null;
     this.beds = null;
     this.baths = null;
+  }
+  #formatFields() {
+    const numericProperties = ['totalPrice', 'pricePerBed', 'beds', 'baths'];
+
+    for (const key in this) {
+      let property = this[key];
+      if (!property) {
+        continue;
+      }
+      if (numericProperties.includes(key)) {
+        if (typeof property === 'number') {
+          continue;
+        }
+        property = property.replaceAll(/[^0-9.]/g, '');
+        property = Number(property);
+        // If numeric properties are falsey (0 included since beds, baths, rent, etc... are not going to be 0)
+        // then we were unable to find them. Mark as null.
+        if (!property) {
+          property = null;
+        }
+      } else if (key === 'leaseStartDate') {
+        // TODO: Check against larger list of words for "right now"
+        if (property.toLowerCase().trim() === 'immediate') {
+          property = 'now';
+        }
+        let date;
+        date = dateParser.fromString(property)
+        if (date.invalid) {
+          property = null;
+          Logger.getInstance().err(`Couldn't convert "${property}" to Date`);
+        } else {
+          property = date.toISOString().split('T')[0];
+        }
+      } else if(property instanceof String) {
+        property = property.trim().replace(/\n{2,}/g, '\n');
+      }
+      this[key] = property;
+    }
   }
   toSQL() {
     const propertiesToStore = [
@@ -62,8 +95,6 @@ export class Listing {
     return { queryString, values: valuesToStore };
   }
   populateFromDOMElement(domElement, selectors) {
-    const numericProperties = ['totalPrice', 'pricePerBed', 'beds', 'baths'];
-
     for (const key in selectors) {
       if (!key.startsWith('_')) {
         let selector;
@@ -84,45 +115,31 @@ export class Listing {
         } else {
           property = element.textContent;
         }
-        if (numericProperties.includes(key)) {
-          property = property.replaceAll(/[^0-9.]/g, '');
-          property = Number(property);
-          // If numeric properties are falsey (0 included since beds, baths, rent, etc... are not going to be 0)
-          // then we were unable to find them. Mark as null.
-          if (!property) {
-            property = null;
-          }
-        } else if (key === 'leaseStartDate') {
-          // TODO: Check against larger list of words for "right now"
-          if (property.toLowerCase().trim() === 'immediate') {
-            property = 'now';
-          }
-          let date;
-          date = dateParser.fromString(property)
-          if (date.invalid) {
-            property = null;
-            Logger.getInstance().err(`Couldn't convert "${property}" to Date`);
-          } else {
-            property = date.toISOString().split('T')[0];
-          }
-        } else {
-          property = property.trim().replace(/\n{2,}/g, '\n');
-        }
         this[key] = property;
       }
     }
-    this.computeHash();
-    this.setPricePerBed(this.totalPrice, this.beds);
+    this.#formatFields();
+    this.#computeHash();
+    this.#setPricePerBed(this.totalPrice, this.beds);
   }
-  setPricePerBed(price, beds) {
+  poplateFromObject(obj) {
+    for (const key in obj) {
+      console.log(`${key} ${obj[key]}`)
+      this[key] = obj[key]
+    }
+    this.#formatFields();
+    this.#computeHash();
+    this.#setPricePerBed();
+  }
+  #setPricePerBed() {
     if (this.totalPrice && this.beds) {
-      this.pricePerBed = price / beds;
+      this.pricePerBed = this.totalPrice / this.beds;
       if (this.pricePerBed <= 500) {
-        this.pricePerBed = price;
+        this.pricePerBed = this.totalPrice;
       }
     }
   }
-  computeHash() {
+  #computeHash() {
     const keysToHash = [
       'address',
       'description',
