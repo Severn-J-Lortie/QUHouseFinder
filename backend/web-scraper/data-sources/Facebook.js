@@ -1,9 +1,8 @@
+import puppeteer from 'puppeteer';
 import { Datasource } from '../Datasource.js';
 import { Listing } from '../Listing.js'
 import { OllamaClient } from '../llm/OllamaClient.js';
-import fetch from 'node-fetch';
-
-import puppeteer from 'puppeteer';
+import { Logger } from '../../Logger.js';
 
 export class Facebook extends Datasource {
   constructor() {
@@ -13,14 +12,14 @@ export class Facebook extends Datasource {
       loginButton: '#login_popup_cta_form > div > div:nth-child(5) > div',
       feed: 'div[role=feed] > div',
       description: 'div[data-ad-rendering-role=story_message]',
-      seeMore: 'div[role=button]'
+      seeMore: 'div[role=button]',
+      postLink: 'a:has(img)'
     }
     super(
       'Facebook',
       'https://www.facebook.com/groups/1618611005028802/?sorting_setting=CHRONOLOGICAL',
       selectors
     );
-    this.browser = puppeteer.launch({ headless: false });
     if (!(process.env['QU_FACEBOOK_USER'] && process.env['QU_FACEBOOK_PASS'])) {
       throw new Error('Facebook username and password not specified. Please add them to .env file');
     }
@@ -32,6 +31,7 @@ export class Facebook extends Datasource {
     const cookies = await page.cookies();
     const sessionCookie = cookies.find(cookie => cookie.name === 'c_user');
     if (!sessionCookie) {
+      await page.waitForSelector(this.selectors.loginUsername);
       await page.type(this.selectors.loginUsername, this.facebook_user);
       await page.type(this.selectors.loginPassword, this.facebook_pass);
       await page.click(this.selectors.loginButton);
@@ -39,7 +39,8 @@ export class Facebook extends Datasource {
     }
   }
   async fetchListings() {
-    const browser = await this.browser;
+    Logger.getInstance().info(`Fetching listings for ${this.name}`);
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(this.link);
     await this.#login(page);
@@ -53,7 +54,7 @@ export class Facebook extends Datasource {
     const scrolls = 10;
     const scrollAmount = 500;
     const loadWaitTime = 1000;
-    const uniqueDescriptions = new Set();
+    let descriptionsAndLinks = []
     for (let i = 0; i < scrolls; i++) {
       await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), scrollAmount);
       await new Promise(resolve => setTimeout(resolve, loadWaitTime));
@@ -68,30 +69,51 @@ export class Facebook extends Datasource {
         }
     }, this.selectors);
 
-      const descriptions = await page.evaluate(async (selectors) => {
+      await new Promise(resolve => setTimeout(resolve, loadWaitTime));
+      const result = await page.evaluate(async (selectors) => {
         const posts = document.querySelectorAll(selectors.feed);
-        const descriptions = [];
-        console.log(posts)
+        const descriptionsAndLinks = [];
         for (const post of posts) {
           const description = post.querySelector(selectors.description);
+          let link = post.querySelector(selectors.postLink)
+          if (link) {
+            link = link.href
+          }
           if (description) {
-            descriptions.push(description.innerText)
+            descriptionsAndLinks.push({description: description.innerText, link});
           }
         }
-        return descriptions;
+        return descriptionsAndLinks;
       }, this.selectors);
+      descriptionsAndLinks = descriptionsAndLinks.concat(result);
+    }
 
-      for (const description of descriptions) {
-        uniqueDescriptions.add(description)
+    const normalize = desc => {
+      return desc.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+    }
+    const dedupedDescriptionsAndLinks = descriptionsAndLinks.filter((obj, index, self) =>
+      index === self.findIndex(o => normalize(o.description) === normalize(obj.description))
+    );
+    Logger.getInstance().info(`Finished scraping ${dedupedDescriptionsAndLinks.length} listings`);
+
+    Logger.getInstance().info(`Postprocessing...`);
+    const listings = [];
+    for (const entry of dedupedDescriptionsAndLinks) {
+      try {
+        const fields = await this.ollamaClient.extractInformation('all', entry.description);
+        fields.description = entry.description;
+        fields.link = entry.link;
+        fields.landlord = 'Private landlord (Facebook)'
+        const listing = new Listing();
+        listing.poplateFromObject(fields);
+        listings.push(listing);
+      } catch (e) {
+        Logger.getInstance().err(`Failed to postprocess ${entry.address}: ${e.stack}`);
+        continue;
       }
     }
-
-    // TODO: This should be created with the constructor then hydrated somehow
-    // basically need to extract that data-type conversion logic from the populateFromDOM listing method
-    const listings = [];
-    for (const description of uniqueDescriptions) {
-      const fields = this.ollamaClient.extractInformation('all', description);
-      const listing = new Listing();
-    }
+    Logger.getInstance().info(`Postprocessing finished`);
+    browser.close();
+    return listings;
   }
 }

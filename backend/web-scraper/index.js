@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-
 import { Updater } from './Updater.js'; 
 import { Logger } from '../Logger.js';
 import dotenv from 'dotenv';

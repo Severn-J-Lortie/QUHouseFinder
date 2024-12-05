@@ -4,13 +4,13 @@ export class Model {
   createPrompt(fields, content) {
     const fieldDescriptors = {
       leaseStartDate: 
-`leaseStartDate: <lease start date>. The date field should be populated with a date 
+`leaseStartDate: <lease start date. The date field should be populated with a date 
 of the form Month Day, Year. E.g. September 1, 2024. If the listing is available "now" or
-"immediately", then put today's date. If a year isn't provided, assume the current year.`,
-      rent: 'rent: <rent>',
+"immediately", then put today's date. If a year isn't provided, assume the current year.>`,
+      totalPrice: 'totalPrice: <the rent>',
       beds: 'beds: <number of beds>\n',
       rentalType: 'rentalType: <sublet/lease>\n',
-      address: 'address: <number and street, e.g. 1-23 Princess St or A23 Toronto St>\n'
+      address: 'address: <number and street, e.g. 1-23 Princess St or A23 Toronto St. If not provided, a very brief description of the location.>\n'
     }
 
     let fieldMessage = '';
