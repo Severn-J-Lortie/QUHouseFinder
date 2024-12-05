@@ -10,11 +10,11 @@ import { Database } from '../Database.js';
 export class Updater {
   constructor() {
     this.datasources = [
-      new Frontenac(),
-      new Heron(),
+      // new Frontenac(),
+      // new Heron(),
       new Panadew(),
-      new QueensCommunityHousing(),
-      new Facebook()
+      // new QueensCommunityHousing(),
+      // new Facebook()
     ];
     this.tableName = 'listings';
   }
@@ -41,7 +41,9 @@ Stack: ${error.stack}`);
   }
   async cleanupOldListings() {
     const db = await Database.getInstance().connect();
-    const oldListings = await db.query("DELETE FROM listings WHERE lastseen < NOW() - INTERVAL '1 day'");
-    Logger.getInstance().info(`Cleaned ${oldListings.rowCount} old listings`);
+    const oldListings = await db.query("DELETE FROM listings WHERE lastseen < NOW() - INTERVAL '1 day' AND datasource != 'Facebook'");
+    const oldListingsFacebook = await db.query("DELETE FROM listings WHERE lastseen < NOW() - INTERVAL '5 day' AND datasource = 'Facebook'");
+    Logger.getInstance().info(`Cleaned ${oldListings.rowCount + oldListingsFacebook.rowCount} old listings`);
+    db.release();
   }
 }

@@ -9,6 +9,7 @@ async function main() {
   dotenv.config({ path: path.resolve(dirname, '../../.env') });
   Logger.getInstance().info('Fetching latest listings...');
   const updater = new Updater();
-  await updater.update();
+  // await updater.update();
+  await updater.cleanupOldListings();
 }
 main();

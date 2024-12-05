@@ -18,21 +18,6 @@ const rentalTypes = ref([
 const user = useUserStore();
 const filters = useFiltersStore();
 
-try {
-  await user.checkForSession();
-} catch (error) {
-  console.error(error);
-}
-
-if (user.loggedIn) {
-  try {
-    await filters.fetchFilters();
-  } catch (error) {
-    toast.add('error','Error', `Unable to fetch filters: ${error.message}`);
-    console.error(error);
-  }
-}
-
 function updateFilter(id, fields) {
   filters.updateFilter(id, fields);
   toast.add('success', 'Saved successfully')
@@ -79,10 +64,13 @@ function updateFilter(id, fields) {
       </div>
       <div class="actions">
         <div class="filter-field action">
-          <Button icon="pi pi-trash" text rounded severity="secondary" @click="filters.deleteFilter(id)" />
+          <Button icon="pi pi-trash" text v-tooltip.top="'Delete filter'" rounded severity="secondary" @click="filters.deleteFilter(id)" />
         </div>
         <div class="filter-field action">
-          <Button icon="pi pi-save" text rounded severity="secondary" @click="updateFilter(id, fields)" />
+          <Button icon="pi pi-save" text v-tooltip.top="'Save filter'" rounded severity="secondary" @click="updateFilter(id, fields)" />
+        </div>
+        <div class="filter-field action">
+          <Button icon="pi pi-play-circle" text v-tooltip.top="'Use filter'" rounded severity="secondary" @click="filters.setActiveFilter(id)" />
         </div>
       </div>
     </div>

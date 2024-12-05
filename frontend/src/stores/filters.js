@@ -1,8 +1,27 @@
 import { ref, toRaw } from 'vue'
 import { defineStore } from 'pinia'
+import { FilterMatchMode } from '@primevue/core/api';
 
 export const useFiltersStore = defineStore('filters', () => {
   const filters = ref([]);
+
+
+  const activeFilter = ref({});
+
+  function resetActiveFilter() {
+    activeFilter.value = {
+      address: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+      beds: { value: null, matchMode: FilterMatchMode.EQUALS },
+      priceperbed: { value: null, matchMode: FilterMatchMode.LESS_THAN_OR_EQUAL_TO },
+      rentaltype: { value: null, matchMode: FilterMatchMode.EQUALS },
+      leasestartdate: { value: null, matchMode: FilterMatchMode.DATE_IS }
+    };
+  }
+
+  function setActiveFilter(id) {
+    const filter = filters.value.find(f => f.id === id);
+    activeFilter.value = filter.fields;
+  }
 
   function removeReactivity(object) {
     object = toRaw(object)
@@ -74,5 +93,5 @@ export const useFiltersStore = defineStore('filters', () => {
     }
     filters.value = result.filters;
   }
-  return { filters, saveFilter, updateFilter, deleteFilter, fetchFilters }
+  return { filters, activeFilter, setActiveFilter, resetActiveFilter, saveFilter, updateFilter, deleteFilter, fetchFilters }
 });

@@ -65,13 +65,11 @@ export class Listing {
       'totalPrice',
       'pricePerBed',
       'beds',
-      'baths'
+      'baths',
+      'datasource'
     ];
     const valuesToStore = [];
     for (const property of propertiesToStore) {
-      if (!(property instanceof Boolean) && !property) {
-
-      }
       valuesToStore.push(this[property]);
     }
     let queryString = '(';
@@ -149,7 +147,8 @@ export class Listing {
       'beds',
       'baths',
       'totalPrice',
-      'link'
+      'link',
+      'datasource'
     ];
     let hashString = '';
     for (const key of keysToHash) {

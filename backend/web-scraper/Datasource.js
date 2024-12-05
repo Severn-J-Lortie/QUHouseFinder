@@ -6,13 +6,13 @@ import { Logger } from '../Logger.js'
 
 export class Datasource {
   constructor(name, link, selectors, hooks) {
-    this.name = name;
+    this.datasource = name;
     this.link = link;
     this.selectors = selectors;
     this.hooks = hooks;
   }
   async fetchListings() {
-    Logger.getInstance().info(`Fetching listings for ${this.name}`);
+    Logger.getInstance().info(`Fetching listings for ${this.datasource}`);
     let response;
     let dom;
     let html;
@@ -59,7 +59,8 @@ export class Datasource {
       dom = new JSDOM(html, {url: detailsLink, virtualConsole});
       const listing = new Listing();
       listing.populateFromDOMElement(dom.window.document, this.selectors)
-      listing.landlord = this.name;
+      listing.landlord = this.datasource;
+      listing.datasource = this.datasource;
       listing.link = detailsLink;
       if (!this.selectors.rentalType) {
         listing.rentalType = 'House';

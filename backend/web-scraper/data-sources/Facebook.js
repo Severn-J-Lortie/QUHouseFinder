@@ -39,7 +39,7 @@ export class Facebook extends Datasource {
     }
   }
   async fetchListings() {
-    Logger.getInstance().info(`Fetching listings for ${this.name}`);
+    Logger.getInstance().info(`Fetching listings for ${this.datasource}`);
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(this.link);
@@ -104,6 +104,7 @@ export class Facebook extends Datasource {
         fields.description = entry.description;
         fields.link = entry.link;
         fields.landlord = 'Private landlord (Facebook)'
+        fields.datasource = this.datasource;
         const listing = new Listing();
         listing.poplateFromObject(fields);
         listings.push(listing);

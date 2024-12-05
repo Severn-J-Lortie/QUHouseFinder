@@ -1,27 +1,48 @@
 <script setup>
 import { ref } from 'vue';
-import { FilterMatchMode } from '@primevue/core/api';
+import { useRoute } from 'vue-router';
 import { useListingsStore } from '@/stores/listings';
 import { useFiltersStore } from '@/stores/filters';
 import { useUserStore } from '@/stores/user';
 import { useToast } from "@/hooks/useToast";
 
+const route = useRoute();
 const toast = useToast();
 const listingsStore = useListingsStore();
 const filtersStore = useFiltersStore();
 const user = useUserStore();
 
-// TODO: This should be top level await with a Suspense
-listingsStore.fetchListings();
+filtersStore.resetActiveFilter();
 
+
+async function init() {
+  try {
+    await user.checkForSession();
+  } catch (error) {
+    console.error(error);
+  }
+
+  if (user.loggedIn) {
+    try {
+      await filtersStore.fetchFilters();
+    } catch (error) {
+      toast.add('error', 'Error', `Unable to fetch filters: ${error.message}`);
+      console.error(error);
+    }
+  }
+  const selectedFilter = route.query['filter'];
+  if (selectedFilter) {
+    try {
+      filtersStore.setActiveFilter(selectedFilter);
+      toast.add('success', 'Success', 'Viewing filter');
+    } catch {
+      toast.add('error', 'Error', 'Unable to find the requested filter');
+    }
+  }
+  listingsStore.fetchListings();
+}
+init();
 const expandedRows = ref({});
-const filters = ref({
-  address: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  beds: { value: null, matchMode: FilterMatchMode.EQUALS },
-  priceperbed: { value: null, matchMode: FilterMatchMode.LESS_THAN_OR_EQUAL_TO },
-  rentaltype: { value: null, matchMode: FilterMatchMode.EQUALS },
-  leasestartdate: { value: null, matchMode: FilterMatchMode.DATE_IS },
-});
 
 async function saveFilter() {
   try {
@@ -65,8 +86,9 @@ function formatDate(dateString) {
         Current Listings
       </h1>
     </header>
-    <DataTable v-model:filters="filters" v-model:expandedRows="expandedRows" :value="listingsStore.listings" paginator
-      :rows="10" dataKey="hash" tableStyle="min-width: 60rem" filterDisplay="row">
+    <DataTable v-model:filters="filtersStore.activeFilter" v-model:expandedRows="expandedRows"
+      :value="listingsStore.listings" paginator :rows="10" dataKey="hash" tableStyle="min-width: 60rem"
+      filterDisplay="row">
       <template #expansion="slotProps">
         <h3>More Info </h3>
         <ul>
@@ -116,6 +138,7 @@ function formatDate(dateString) {
           <Button @click="saveFilter()" :disabled="!user.loggedIn">
             {{ user.loggedIn ? 'Save Filter' : 'Login to Save Filters' }}
           </Button>
+          <Button type="button" id='clear-button' label="Clear" outlined @click="filtersStore.resetActiveFilter()" />
         </template>
         <template #body="{ data }">
           <Button link as="a" :label="data.landlord" :href="data.link" target="_blank" rel="noopener"
@@ -130,5 +153,9 @@ function formatDate(dateString) {
 .justify-end {
   display: flex;
   justify-content: flex-end;
+}
+
+#clear-button {
+  margin-left: 15px;
 }
 </style>
