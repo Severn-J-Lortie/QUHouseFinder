@@ -2,6 +2,7 @@ import { Frontenac } from './data-sources/Frontenac.js';
 import { Heron } from './data-sources/Heron.js';
 import { Panadew } from './data-sources/Panadew.js';
 import { QueensCommunityHousing } from './data-sources/QueensCommunityHousing.js';
+import { Facebook } from './data-sources/Facebook.js';
 import { Logger } from '../Logger.js'
 
 import { Database } from '../Database.js';
@@ -12,7 +13,8 @@ export class Updater {
       new Frontenac(),
       new Heron(),
       new Panadew(),
-      new QueensCommunityHousing()
+      new QueensCommunityHousing(),
+      new Facebook()
     ];
     this.tableName = 'listings';
   }
@@ -36,5 +38,10 @@ Stack: ${error.stack}`);
       await db.query(queryString, listingSQL.values);
     }
     db.release();
+  }
+  async cleanupOldListings() {
+    const db = await Database.getInstance().connect();
+    const oldListings = await db.query("DELETE FROM listings WHERE lastseen < NOW() - INTERVAL '1 day'");
+    Logger.getInstance().info(`Cleaned ${oldListings.rowCount} old listings`);
   }
 }
