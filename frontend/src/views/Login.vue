@@ -48,7 +48,8 @@ async function login() {
     router.push('/');
     loginFeedback.value = '';
   } catch (error) {
-    toast.add('Error', 'Login Error', error.message);
+    console.error(error)
+    toast.add('error', 'Login Error', error.message);
   }
 }
 
@@ -77,6 +78,7 @@ async function register() {
 </script>
 
 <template>
+  <Toast />
   <div class="card">
     <header>
       <Image src="/src/assets/logo.png" width="100" />
@@ -86,8 +88,8 @@ async function register() {
     </header>
     <div class="login-form">
       <div>
-        <InputText placeholder="Email" v-model="loginInfo.email" />
-        <InputText placeholder="Password" type="password" v-model="loginInfo.password" />
+        <InputText placeholder="Email" v-model="loginInfo.email"  @keydown.enter="login" />
+        <InputText placeholder="Password" type="password" v-model="loginInfo.password"  @keydown.enter="login" />
         <Button @click="login()">Login</Button>
         <div class="feedback">{{ loginFeedback }}</div>
       </div>

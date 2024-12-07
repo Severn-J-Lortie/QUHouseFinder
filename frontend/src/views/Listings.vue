@@ -4,6 +4,15 @@ import FiltersCard from '@/components/FilterCard.vue';
 </script>
 <template>
   <Toast />
+  <div class="card">
+    <header>
+      <Image src="/src/assets/logo.png" width="50" />
+      <h1>
+        QUHouseFinder (beta)
+      </h1>
+    </header>
+    Welcome to QUHouseFinder! Below are the most recent student rentals in Kingston, aggregated from a number of data sources.
+  </div>
   <ListingDataTable/>
   <Suspense>
     <template #default>
@@ -14,3 +23,13 @@ import FiltersCard from '@/components/FilterCard.vue';
     </template>
   </Suspense>
 </template>
+
+<style scoped>
+  header {
+    display: flex;
+    align-items: center;
+  }
+  header > h1 {
+    margin-left: 10px;
+  }
+</style>

@@ -88,9 +88,14 @@ export class FilterExecutor {
       const { query: filterQuery , values: filterValues }= this.#queryFromFilterFields(filter.fields);
       let matchingListings = (await this.#db.query(filterQuery, filterValues)).rows;
       const matchingListingsHashes = matchingListings.map(listing => listing.hash);
-      const newListings = matchingListings.filter(listing => !filter.previousmatches.includes(listing.hash));
-      newFiltersUserMap[filter.userid] = newListings;
-      await this.#db.query('UPDATE filters SET previousmatches = $1 WHERE id = $2', [matchingListingsHashes, filter.id])
+      const newListings = matchingListings.filter(listing => !filter.previousmatches?.includes(listing.hash));
+      if (newListings.length) {
+        if (!newFiltersUserMap[filter.userid]) {
+          newFiltersUserMap[filter.userid] = {};
+        }
+        newFiltersUserMap[filter.userid][filter.id] = newListings;
+        await this.#db.query('UPDATE filters SET previousmatches = $1 WHERE id = $2', [matchingListingsHashes, filter.id])
+      }
     }
     return newFiltersUserMap;
   }

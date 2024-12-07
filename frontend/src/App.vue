@@ -12,6 +12,3 @@ user.checkForSession().catch((error) => {
 <template>
   <RouterView />
 </template>
-
-<style scoped>  
-</style>
