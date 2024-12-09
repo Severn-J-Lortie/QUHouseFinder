@@ -21,11 +21,11 @@ jobs:
 
     - name: Deploy frontend files
       run: |
-        rsync -av --delete frontend/dist/ /var/lib/www/quhousefinder.com/frontend
+        rsync -av --delete frontend/dist/ /var/www/quhousefinder.com/frontend
 
     - name: Deploy backend files
       run: |
-        rsync -av --delete backend/ /var/lib/www/quhousefinder.com/backend
+        rsync -av --delete backend/ /var/www/quhousefinder.com/backend
 
     # - name: Restart backend service
     #   run: |
