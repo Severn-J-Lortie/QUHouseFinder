@@ -1,7 +1,4 @@
 import express from 'express';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
@@ -13,12 +10,8 @@ import filterRoutes from './routes/filters.js';
 import listingRoutes from './routes/listings.js';
 import { requireAuth } from './middleware/auth.js';
 
-const app = express();
-
-async function initApp() {
-  const dirname = path.dirname(fileURLToPath(import.meta.url));
-  dotenv.config({ path: path.resolve(dirname, '../../.env') });
-
+export async function initApp() {
+  const app = express();
   const logger = Logger.getInstance();
   let platform = process.env['QU_PLATFORM'] || 'development';
   if (!['production', 'development'].includes(platform)) {
@@ -70,8 +63,5 @@ async function initApp() {
   app.use('/auth', authRoutes);
   app.use('/filters', requireAuth, filterRoutes);
   app.use('/listings', listingRoutes);
+  return app;
 }
-
-initApp();
-
-export default app;
