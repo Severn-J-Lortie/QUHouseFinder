@@ -1,0 +1,32 @@
+name: Deploy to Local Server
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    runs-on: webhost
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Vue.js app
+      run: |
+        cd frontend
+        npm install
+        npm run build
+
+    - name: Deploy frontend files
+      run: |
+        rsync -av --delete frontend/dist/ /var/lib/www/quhousefinder.com/frontend
+
+    - name: Deploy backend files
+      run: |
+        rsync -av --delete backend/ /var/lib/www/quhousefinder.com/backend
+
+    # - name: Restart backend service
+    #   run: |
+    #     pm2 restart qu-backend

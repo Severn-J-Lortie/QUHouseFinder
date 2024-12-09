@@ -10,11 +10,12 @@ All of Kingston's student listings, aggregated in one place.
 - Panadew ✅🚧
   - Only scrapes from the first page. Need to implement multi-page requests
 - Heron Management ✅
-- Facebook (in progress) 📋
+- Facebook (in progress) ✅
 - Ebay (in progress) 📋
 - Queen's Community Housing ✅
 
 ## TODO
+- Finish deplopying (currently the static site is up but need to add the backend stuff)....
 - MVP:
   - Forgot password, delete account
   - Add emails when filters change
