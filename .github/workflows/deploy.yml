@@ -26,6 +26,7 @@ jobs:
     - name: Deploy backend files
       run: |
         rsync -av --delete backend/ /var/www/quhousefinder.com/backend
+        cd /var/www/quhousefinder.com/backend && npm install
 
     # - name: Restart backend service
     #   run: |
