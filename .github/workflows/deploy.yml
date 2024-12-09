@@ -28,6 +28,6 @@ jobs:
         rsync -av --delete backend/ /var/www/quhousefinder.com/backend
         cd /var/www/quhousefinder.com/backend && npm install
 
-    # - name: Restart backend service
-    #   run: |
-    #     pm2 restart qu-backend
+    - name: Restart backend service
+      run: |
+        pm2 restart api-server
