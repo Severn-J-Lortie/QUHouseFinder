@@ -8,15 +8,22 @@ const logger = Logger.getInstance();
 const defaultPort = 8080;
 const listenPort = process.env['QU_BACKEND_PORT'] || defaultPort;
 
+let useHttps = true;
 if (!(process.env['QU_CERT_PATH'] && process.env['QU_KEY_PATH'])) {
-  throw new Error('Need to specify cert and key path.');
+  logger.info('No certs specified, running in HTTP mode');
+  useHttps = false;
 }
 
-const httpsServerOptions = {
-  key: fs.readFileSync(process.env['QU_KEY_PATH']),
-  cert: fs.readFileSync(process.env['QU_CERT_PATH']),
-};
-
-https.createServer(httpsServerOptions, app).listen(listenPort, () => {
+let server;
+if (useHttps) {
+  const httpsServerOptions = {
+    key: fs.readFileSync(process.env['QU_KEY_PATH']),
+    cert: fs.readFileSync(process.env['QU_CERT_PATH']),
+  };
+  server = https.createServer(httpsServerOptions, app);
+} else {
+  server = app;
+}
+server.listen(listenPort, () => {
   logger.info(`Server is starting on port ${listenPort}`);
 });
