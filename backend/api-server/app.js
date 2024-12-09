@@ -4,10 +4,10 @@ import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import { Logger } from '../Logger.js';
 import { Database } from '../Database.js';
-import indexRoutes from './routes/index.js';
-import authRoutes from './routes/auth.js';
-import filterRoutes from './routes/filters.js';
-import listingRoutes from './routes/listings.js';
+import { getRoutes as indexRoutes } from './routes/index.js';
+import { getRoutes as authRoutes } from './routes/auth.js';
+import { getRoutes as filterRoutes } from './routes/filters.js';
+import { getRoutes as listingRoutes } from './routes/listings.js';
 import { requireAuth } from './middleware/auth.js';
 
 export async function initApp() {
@@ -59,9 +59,9 @@ export async function initApp() {
     next();
   });
 
-  app.use('/', indexRoutes);
-  app.use('/auth', authRoutes);
-  app.use('/filters', requireAuth, filterRoutes);
-  app.use('/listings', listingRoutes);
+  app.use('/', indexRoutes());
+  app.use('/auth', authRoutes());
+  app.use('/filters', requireAuth, filterRoutes());
+  app.use('/listings', listingRoutes());
   return app;
 }
