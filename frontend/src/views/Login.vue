@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useToast } from '@/hooks/useToast';
+import logoImg from '@assets/logo.png';
 
 const router = useRouter();
 const user = useUserStore();
@@ -81,7 +82,7 @@ async function register() {
   <Toast />
   <div class="card">
     <header>
-      <Image src="/src/assets/logo.png" width="100" />
+      <Image :src="logoImg" width="100" />
       <h1>
         QUHouseFinder
       </h1>
