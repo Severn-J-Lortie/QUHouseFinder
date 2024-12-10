@@ -6,7 +6,7 @@ import FiltersCard from '@/components/FilterCard.vue';
   <Toast />
   <div class="card">
     <header>
-      <Image src="/src/assets/logo.png" width="50" />
+      <Image src="@/assets/logo.passive" width="50" />
       <h1>
         QUHouseFinder (beta)
       </h1>
