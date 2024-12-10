@@ -1,12 +1,13 @@
 <script setup>
 import ListingDataTable from '@/components/ListingsDataTable.vue';
 import FiltersCard from '@/components/FilterCard.vue';
+import logoImg from '@/assets/logo.png'
 </script>
 <template>
   <Toast />
   <div class="card">
     <header>
-      <Image src="@/assets/logo.passive" width="50" />
+      <Image :src="logoImg" width="50" />
       <h1>
         QUHouseFinder (beta)
       </h1>
