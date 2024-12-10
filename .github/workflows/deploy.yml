@@ -15,6 +15,7 @@ jobs:
 
     - name: Build Vue.js app
       run: |
+        cp /var/www/quhousefinder.com/.env .env
         cd frontend
         npm install
         npm run build
