@@ -37,6 +37,7 @@ export async function initApp() {
 
   const sessionMaxAge = 7 * 24 * 60 * 60 * 1000;
   const db = await Database.getInstance().connect();
+  app.set('trust proxy', true);
   app.use(session({
     store: new PgSession({
       pool: Database.getInstance().getPool(),
@@ -46,6 +47,7 @@ export async function initApp() {
     secret: process.env['QU_SESSION_SECRET'],
     resave: false,
     saveUninitialized: true,
+    proxy: true,
     cookie: {
       secure: true,
       maxAge: sessionMaxAge,
@@ -53,6 +55,13 @@ export async function initApp() {
       sameSite: 'none',
     },
   }));
+
+  app.use((req, res, next) => {
+    console.log('Session Middleware Debug:');
+    console.log('Session ID:', req.sessionID);
+    console.log('Session Data:', req.session);
+    next();
+  });
 
   app.use((req, res, next) => {
     req.db = db;
