@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useToast } from '@/hooks/useToast';
-import logoImg from '@assets/logo.png';
+import logoImg from '@/assets/logo.png';
 
 const router = useRouter();
 const user = useUserStore();
