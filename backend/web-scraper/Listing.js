@@ -75,6 +75,9 @@ export class Listing {
     let queryString = '(';
     for (let i = 0; i < propertiesToStore.length; i++) {
       const property = propertiesToStore[i];
+      if (valuesToStore[i] == null) {
+        continue;
+      }
       if (i === propertiesToStore.length - 1) {
         queryString += `${property}`;
       } else {
@@ -83,6 +86,9 @@ export class Listing {
     }
     queryString += ') VALUES (';
     for (let i = 0; i < propertiesToStore.length; i++) {
+      if (valuesToStore[i] == null) {
+        continue;
+      }
       if (i === propertiesToStore.length - 1) {
         queryString += `$${i + 1}`;
       } else {
@@ -122,7 +128,6 @@ export class Listing {
   }
   poplateFromObject(obj) {
     for (const key in obj) {
-      console.log(`${key} ${obj[key]}`)
       this[key] = obj[key]
     }
     this.#formatFields();

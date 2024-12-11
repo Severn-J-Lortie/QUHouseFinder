@@ -10,7 +10,7 @@ of the form Month Day, Year. E.g. September 1, 2024. If the listing is available
       totalPrice: 'totalPrice: <the rent>',
       beds: 'beds: <number of beds>\n',
       rentalType: 'rentalType: <sublet/lease>\n',
-      address: 'address: <number and street, e.g. 1-23 Princess St or A23 Toronto St. If not provided, a very brief description of the location.>\n'
+      address: 'address: <number and street, e.g. 1-23 Princess St or A23 Toronto St. If not provided, a very brief description of the location. This should NEVER be null.>\n'
     }
 
     let fieldMessage = '';

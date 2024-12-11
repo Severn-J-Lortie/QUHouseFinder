@@ -11,7 +11,6 @@ watch(() => modelValue, (newValue) => {
   localConstraint.value = newValue;
 });
 const updateParent = () => {
-  console.log('gggg')
   emit('update:modelValue', localConstraint.value)
 }
 
