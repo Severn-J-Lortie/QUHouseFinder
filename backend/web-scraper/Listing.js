@@ -47,7 +47,7 @@ export class Listing {
         } else {
           property = date.toISOString().split('T')[0];
         }
-      } else if(property instanceof String) {
+      } else if(typeof property === 'string') {
         property = property.trim().replace(/\n{2,}/g, '\n').replace(/\t+/g, '');
       }
       this[key] = property;
