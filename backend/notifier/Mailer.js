@@ -23,7 +23,7 @@ export class Mailer {
       to: userEmail,
       subject: 'New Listings Matching Your Filters',
     };
-    let messageHtml = '';
+    let messageHtml = 'Below are new listings that match one or more of your filters. Click the filter or the link to view them.';
     for (const filterId in filterResults) {
       messageHtml += `<h2>Listings from <a href="${`https://quhousefinder.com/?filter=${filterId}`}">this filter</a></h2>\n`;
       for (const listing of filterResults[filterId]) {
@@ -38,6 +38,10 @@ export class Mailer {
         if (listing.beds) {
           const beds = `<p>Beds: ${listing.beds}</p>\n`;
           messageHtml += beds;
+        }
+        if (listing.link) {
+          const link = `<a href=${listing.link}>Link</a>`;
+          messageHtml += link;
         }
       }
     }
