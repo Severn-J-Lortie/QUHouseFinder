@@ -6,16 +6,16 @@ export class Axon extends Datasource {
     const selectors = {
       _listingElements: 'div.jet-listing-grid__item',
       _link: { selector: 'a', getProperty: el => el.href },
-      address: 'div.elementor-element-de1bbf1 h1',
-      beds: 'div.elementor-element-655d0ed li:nth-child(1) > span.elementor-icon-list-text',
-      baths: 'div.elementor-element-655d0ed li:nth-child(2) > span.elementor-icon-list-text',
-      totalPrice: { selector: '' }, // TODO: Support for querySelectorAll
+      address: 'h1.elementor-heading-title.elementor-size-default',
+      beds: 'div.elementor-widget-icon-list:nth-child(3) li',
+      baths: 'div.elementor-widget-icon-list:nth-child(3) li:nth-child(2)',
+      totalPrice: { selector: 'div.elementor-element.elementor-widget.elementor-widget-heading:nth-child(2)' },
       leaseStartDate: { selector: 'h3.elementor-heading-title.elementor-size-default', getProperty: el => el.textContent.split(':')[1] },
       description: { selector: 'div.elementor-element.elementor-widget.elementor-widget-text-editor', getProperty: el => el.textContent.trim().replaceAll('\n', ' ') }
     }
     super(  
       'Axon Property Management', 
-      'https://axonproperties.ca/student-rentals-kingston/?nocache=1724697160',
+      'https://axonproperties.ca/student-rentals-kingston/',
       selectors,
       {
         fetch: async (link) => {
