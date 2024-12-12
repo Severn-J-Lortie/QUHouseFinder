@@ -11,10 +11,10 @@ export class Updater {
   constructor() {
     this.datasources = [
       new Frontenac(),
-      // new Heron(),
-      // new Panadew(),
-      // new QueensCommunityHousing(),
-      // new Facebook()
+      new Heron(),
+      new Panadew(),
+      new QueensCommunityHousing(),
+      new Facebook()
     ];
     this.tableName = 'listings';
   }
