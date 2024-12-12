@@ -13,7 +13,7 @@ export const useFiltersStore = defineStore('filters', () => {
       address: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
       beds: { value: null, matchMode: FilterMatchMode.EQUALS },
       priceperbed: { value: null, matchMode: FilterMatchMode.LESS_THAN_OR_EQUAL_TO },
-      rentaltype: { value: null, matchMode: FilterMatchMode.EQUALS },
+      leasetype: { value: null, matchMode: FilterMatchMode.EQUALS },
       leasestartdate: { value: null, matchMode: FilterMatchMode.DATE_IS }
     };
   }

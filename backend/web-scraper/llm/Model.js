@@ -2,6 +2,9 @@ export class Model {
   static MODEL = 'gemma2:2b-instruct-fp16';
 
   createPrompt(fields, content) {
+    if (!(fields instanceof Array)) {
+      throw new Error('fields argument must be an array');
+    }
     const fieldDescriptors = {
       leaseStartDate: 
 `leaseStartDate: <lease start date. The date field should be populated with a date 
@@ -9,8 +12,8 @@ of the form Month Day, Year. E.g. September 1, 2024. If the listing is available
 "immediately", then put today's date. If a year isn't provided, assume the current year.>`,
       totalPrice: 'totalPrice: <the rent>',
       beds: 'beds: <number of beds>\n',
-      rentalType: 'rentalType: <sublet/lease>\n',
-      address: 'address: <number and street, e.g. 1-23 Princess St or A23 Toronto St. If not provided, a very brief description of the location. This should NEVER be null.>\n'
+      leaseType: 'leaseType: <Sublet/Lease>\n',
+      address: 'address: <number and street, e.g. 1-23 Princess St or A23 Toronto St. If you cannot find it, a very brief description of the location. This should NEVER be null.>\n'
     }
 
     let fieldMessage = '';

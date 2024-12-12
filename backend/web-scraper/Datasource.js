@@ -62,8 +62,8 @@ export class Datasource {
       listing.landlord = this.datasource;
       listing.datasource = this.datasource;
       listing.link = detailsLink;
-      if (!this.selectors.rentalType) {
-        listing.rentalType = 'House';
+      if (!this.selectors.leaseType) {
+        listing.leaseType = 'Lease';
       }
 
       let finalListing;

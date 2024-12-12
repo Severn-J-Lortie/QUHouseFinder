@@ -15,9 +15,7 @@ const filtersStore = useFiltersStore();
 const user = useUserStore();
 
 filtersStore.resetActiveFilter();
-
-
-async function init() {
+async function fetchData() {
   try {
     await user.checkForSession();
   } catch (error) {
@@ -46,10 +44,9 @@ async function init() {
       toast.add('error', 'Error', 'Unable to find the requested filter');
     }
   }
-
   listingsStore.fetchListings();
 }
-init();
+fetchData();
 const expandedRows = ref({});
 
 async function saveFilter() {
@@ -60,13 +57,6 @@ async function saveFilter() {
     console.error(error);
   }
 }
-
-const rentalTypes = ref([
-  'Sublet',
-  'Apartment',
-  'House',
-  'Room'
-]);
 
 function formatCurrency(amount) {
   if (typeof amount === 'number') {
@@ -83,6 +73,8 @@ function formatDate(dateString) {
     });
   }
 }
+
+const leaseTypes = ['Sublet', 'Lease'];
 
 </script>
 
@@ -126,9 +118,9 @@ function formatDate(dateString) {
           <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Rent" />
         </template>
       </Column>
-      <Column header="Rental Type" field="rentaltype" :showFilterMenu="false">
+      <Column header="Rental Type" field="leasetype" :showFilterMenu="false">
         <template #filter="{ filterModel, filterCallback }">
-          <Select v-model="filterModel.value" :options="rentalTypes" placeholder="Any"
+          <Select v-model="filterModel.value" :options="leaseTypes" placeholder="Any"
             @change="filterCallback()"></Select>
         </template>
       </Column>

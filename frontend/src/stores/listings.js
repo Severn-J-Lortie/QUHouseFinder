@@ -7,7 +7,9 @@ export const useListingsStore = defineStore('listings', () => {
     const response = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/listings`);
     const listingsStringDate = await response.json();
     for (const listing of listingsStringDate) {
-      listing.leasestartdate = new Date(listing.leasestartdate);
+      if (listing.leasestartdate) {
+        listing.leasestartdate = new Date(listing.leasestartdate);
+      }
       listings.value.push(listing);
     }
   }

@@ -7,7 +7,7 @@ export class Listing {
     this.address = null;
     this.landlord = null;
     this.link = null;
-    this.rentalType = null;
+    this.leaseType = null;
     this.leaseStartDate = null;
     this.description = null;
     this.totalPrice = null;
@@ -59,7 +59,7 @@ export class Listing {
       'address',
       'landlord',
       'link',
-      'rentalType',
+      'leaseType',
       'leaseStartDate',
       'description',
       'totalPrice',
@@ -70,7 +70,7 @@ export class Listing {
     ];
     const valuesToStore = [];
     for (const property of propertiesToStore) {
-      if (property != null) {
+      if (this[property] != null) {
         valuesToStore.push({value: this[property], column: property});
       }
     }
@@ -143,7 +143,7 @@ export class Listing {
       'address',
       'description',
       'landlord',
-      'rentalType',
+      'leaseType',
       'leaseStartDate',
       'beds',
       'baths',

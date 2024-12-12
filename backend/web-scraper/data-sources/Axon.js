@@ -9,9 +9,9 @@ export class Axon extends Datasource {
       address: 'div.elementor-element-de1bbf1 h1',
       beds: 'div.elementor-element-655d0ed li:nth-child(1) > span.elementor-icon-list-text',
       baths: 'div.elementor-element-655d0ed li:nth-child(2) > span.elementor-icon-list-text',
-      totalPrice: 'div.elementor-element-6d1a791 h3',
-      leaseStartDate: { selector: 'div.elementor-element-62f7376 h3', getProperty: el => el.textContent.split(':')[1] },
-      description: { selector: 'div.elementor-element-1eb96a3 div.elementor-widget-container *:not(style)', getProperty: el => el.textContent.trim().replaceAll('\n', ' ') }
+      totalPrice: { selector: '' }, // TODO: Support for querySelectorAll
+      leaseStartDate: { selector: 'h3.elementor-heading-title.elementor-size-default', getProperty: el => el.textContent.split(':')[1] },
+      description: { selector: 'div.elementor-element.elementor-widget.elementor-widget-text-editor', getProperty: el => el.textContent.trim().replaceAll('\n', ' ') }
     }
     super(  
       'Axon Property Management', 

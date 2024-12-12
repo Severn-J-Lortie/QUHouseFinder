@@ -1,4 +1,5 @@
 import { Datasource } from '../Datasource.js';
+import { OllamaClient } from '../llm/OllamaClient.js';
 export class QueensCommunityHousing extends Datasource {
   constructor() {
     const removeCellLabel = el => el.textContent.split(':')[1].trim();
@@ -9,8 +10,8 @@ export class QueensCommunityHousing extends Datasource {
         selector: '#search-listings > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2)',
         getProperty: removeCellLabel
       },
-      rentalType: { 
-        selector: '#search-listings > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(4)',
+      leaseType: { 
+        selector: '#search-listings > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(5)',
         getProperty: removeCellLabel
       },
       beds: {
@@ -43,6 +44,18 @@ export class QueensCommunityHousing extends Datasource {
           </table>
           `;
           return fullTableHtml;
+        },
+        postprocess: async (listing) => {
+          const formattedLeaseType = listing.leaseType.toLowerCase();
+          if (!(formattedLeaseType.includes('lease') || formattedLeaseType.includes('sublet'))) {
+            if (listing.description) {
+              const ollamaClient = OllamaClient.getInstance();
+              const leaseType = (await ollamaClient.extractInformation(['leaseType'], listing.description)).leaseType;
+              console.log(leaseType)
+              listing.leaseType = leaseType;
+            }
+          }
+          return listing;
         }
       }
     );

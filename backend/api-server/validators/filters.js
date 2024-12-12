@@ -5,11 +5,11 @@ export function validateFields(fields) {
 
   const fieldsSchema = {
     columnKeys: ['value', 'matchMode'],
-    requiredKeys: ['address', 'beds', 'priceperbed', 'rentaltype', 'leasestartdate'],
+    requiredKeys: ['address', 'beds', 'priceperbed', 'leasetype', 'leasestartdate'],
     address: { dataType: 'string' },
     beds: { dataType: 'number' },
     priceperbed: { dataType: 'number' },
-    rentaltype: { dataType: 'string' },
+    leasetype: { dataType: 'string' },
     leasestartdate: { dataType: 'date' },
   };
   const allowableMatchModes = {

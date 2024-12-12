@@ -1,6 +1,4 @@
 <script setup>
-import { ref } from 'vue';
-
 import { useToast } from '@/hooks/useToast';
 
 import { useUserStore } from '@/stores/user';
@@ -8,18 +6,14 @@ import { useFiltersStore } from '@/stores/filters';
 
 import FilterCardConstraintMenu from './FilterCardConstraintMenu.vue';
 const toast = useToast();
-const rentalTypes = ref([
-  'Sublet',
-  'Apartment',
-  'House',
-  'Room'
-]);
 
 const user = useUserStore();
-const filters = useFiltersStore();
+const filtersStore = useFiltersStore();
+
+const leaseTypes = ['Sublet', 'Lease'];
 
 function updateFilter(id, fields) {
-  filters.updateFilter(id, fields);
+  filtersStore.updateFilter(id, fields);
   toast.add('success', 'Saved successfully')
 }
 
@@ -37,7 +31,7 @@ function updateFilter(id, fields) {
     <RouterLink to="/login" v-if="!user.loggedIn">
       <Button>Signup/Login</Button>
     </RouterLink>
-    <div class="filter" v-for="{ id, fields } in filters.filters">
+    <div class="filter" v-for="{ id, fields } in filtersStore.filters">
       <div class="filter-field">
         <div>Address</div>
         <InputText placeholder="Address" v-model="fields.address.value" />
@@ -55,7 +49,7 @@ function updateFilter(id, fields) {
       </div>
       <div class="filter-field">
         <div>Rental Type</div>
-        <Select class="min-width" placeholder="Rental Type" :options="rentalTypes" v-model="fields.rentaltype.value" />
+        <Select class="min-width" placeholder="Rental Type" :options="leaseTypes" v-model="fields.leasetype.value" />
       </div>
       <div class="filter-field">
         <div>Start Date</div>
@@ -64,13 +58,13 @@ function updateFilter(id, fields) {
       </div>
       <div class="actions">
         <div class="filter-field action">
-          <Button icon="pi pi-trash" text v-tooltip.top="'Delete filter'" rounded severity="secondary" @click="filters.deleteFilter(id)" />
+          <Button icon="pi pi-trash" text v-tooltip.top="'Delete filter'" rounded severity="secondary" @click="filtersStore.deleteFilter(id)" />
         </div>
         <div class="filter-field action">
           <Button icon="pi pi-save" text v-tooltip.top="'Save filter'" rounded severity="secondary" @click="updateFilter(id, fields)" />
         </div>
         <div class="filter-field action">
-          <Button icon="pi pi-play-circle" text v-tooltip.top="'Use filter'" rounded severity="secondary" @click="filters.setActiveFilter(id)" />
+          <Button icon="pi pi-play-circle" text v-tooltip.top="'Use filter'" rounded severity="secondary" @click="filtersStore.setActiveFilter(id)" />
         </div>
       </div>
     </div>

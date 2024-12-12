@@ -9,6 +9,9 @@ async function main() {
   dotenv.config({ path: path.resolve(dirname, '../../../.env') });
   const facebook = new Facebook();
   const listings = await facebook.fetchListings();
-  console.log(listings);
+  for (const listing of listings) {
+    console.log(listing);
+    console.log(listing.toSQL());
+  }
 }
 main();

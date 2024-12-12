@@ -10,7 +10,6 @@ export class Panadew extends Datasource {
       },
       _link: { selector: 'div > a', getProperty: el => el.href },
       address: '#title',
-      rentalType: '#tab0 > ul > li:nth-child(2)',
       leaseStartDate: {
         selector: '#tab0 > ul > li:nth-child(5)',
         getProperty: el => el.textContent.split(':')[1].trim()
