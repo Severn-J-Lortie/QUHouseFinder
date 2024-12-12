@@ -54,7 +54,7 @@ const expandedRows = ref({});
 
 async function saveFilter() {
   try {
-    await filtersStore.saveFilter(filters.value);
+    await filtersStore.saveFilter(filtersStore.activeFilter);
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Error', detail: `Unable to save filter: ${error.message}`, life: 3000 });
     console.error(error);
