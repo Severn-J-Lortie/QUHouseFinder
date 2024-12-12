@@ -70,33 +70,29 @@ export class Listing {
     ];
     const valuesToStore = [];
     for (const property of propertiesToStore) {
-      valuesToStore.push(this[property]);
+      if (property != null) {
+        valuesToStore.push({value: this[property], column: property});
+      }
     }
     let queryString = '(';
-    for (let i = 0; i < propertiesToStore.length; i++) {
-      const property = propertiesToStore[i];
-      if (valuesToStore[i] == null) {
-        continue;
-      }
-      if (i === propertiesToStore.length - 1) {
-        queryString += `${property}`;
+    for (let i = 0; i < valuesToStore.length; i++) {
+      const { column } = valuesToStore[i];
+      if (i === valuesToStore.length - 1) {
+        queryString += `${column}`;
       } else {
-        queryString += `${property}, `;
+        queryString += `${column}, `;
       }
     }
     queryString += ') VALUES (';
-    for (let i = 0; i < propertiesToStore.length; i++) {
-      if (valuesToStore[i] == null) {
-        continue;
-      }
-      if (i === propertiesToStore.length - 1) {
+    for (let i = 0; i < valuesToStore.length; i++) {
+      if (i === valuesToStore.length - 1) {
         queryString += `$${i + 1}`;
       } else {
         queryString += `$${i + 1}, `;
       }
     }
     queryString += ')';
-    return { queryString, values: valuesToStore };
+    return { queryString, values: valuesToStore.map(x => x.value) };
   }
   populateFromDOMElement(domElement, selectors) {
     for (const key in selectors) {

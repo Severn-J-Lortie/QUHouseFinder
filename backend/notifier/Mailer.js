@@ -17,7 +17,7 @@ export class Mailer {
 
   async send(userId, filterResults) {
     const userEmailQuery = await this.db.query('SELECT email FROM users WHERE id = $1', [userId]);
-    const userEmail = userEmailQuery.rows[0];
+    const userEmail = userEmailQuery.rows[0].email;
     const mailOptions = {
       from: 'queenshousebot@gmail.com',
       to: userEmail,
@@ -41,7 +41,8 @@ export class Mailer {
         }
       }
     }
-    console.log(messageHtml);
+    mailOptions.html = messageHtml;
+    this.transporter.sendMail(mailOptions);
   }
 
 }

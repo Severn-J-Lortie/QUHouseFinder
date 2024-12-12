@@ -12,7 +12,9 @@ async function main() {
   const filterExecutor = new FilterExecutor(db);
   const mailer = new Mailer(db);
   const filterMap = await filterExecutor.runFilters();
+  console.log(filterMap)
   for (const userId in filterMap) {
+    console.log(filterMap);
     const filterResults = filterMap[userId];
     await mailer.send(userId, filterResults);
   }

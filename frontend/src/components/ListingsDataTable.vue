@@ -1,12 +1,14 @@
 <script setup>
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router'
 import { useListingsStore } from '@/stores/listings';
 import { useFiltersStore } from '@/stores/filters';
 import { useUserStore } from '@/stores/user';
 import { useToast } from "@/hooks/useToast";
 
 const route = useRoute();
+const router = useRouter();
 const toast = useToast();
 const listingsStore = useListingsStore();
 const filtersStore = useFiltersStore();
@@ -22,6 +24,11 @@ async function init() {
     console.error(error);
   }
 
+  const selectedFilter = route.query['filter'];
+  if (!user.loggedIn && selectedFilter) {
+    router.push('/login');
+  }
+
   if (user.loggedIn) {
     try {
       await filtersStore.fetchFilters();
@@ -30,7 +37,7 @@ async function init() {
       console.error(error);
     }
   }
-  const selectedFilter = route.query['filter'];
+
   if (selectedFilter) {
     try {
       filtersStore.setActiveFilter(selectedFilter);
@@ -39,6 +46,7 @@ async function init() {
       toast.add('error', 'Error', 'Unable to find the requested filter');
     }
   }
+
   listingsStore.fetchListings();
 }
 init();
