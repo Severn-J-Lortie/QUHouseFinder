@@ -19,7 +19,6 @@ All of Kingston's student listings, aggregated in one place.
   - Forgot password, delete account
   - Add emails when filters change
     - Send an email with a link to the filter
-  - Need querySelectorAll() support for Panadew
 - Refactor: listings should have a method to turn themselves into text representations
 - Refactor: listings should have a fromSQL method
 - Sort entries by newest first. Just need to store timestamp when we insert the entry

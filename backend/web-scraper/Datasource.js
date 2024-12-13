@@ -1,4 +1,4 @@
-import {JSDOM, VirtualConsole } from 'jsdom';
+import { JSDOM, VirtualConsole } from 'jsdom';
 import fetch from 'node-fetch';
 
 import { Listing } from './Listing.js'
@@ -11,15 +11,16 @@ export class Datasource {
     this.selectors = selectors;
     this.hooks = hooks;
   }
-  async fetchListings() {
-    Logger.getInstance().info(`Fetching listings for ${this.datasource}`);
+  async fetchListings(pageLink, pageNumber) {
+    Logger.getInstance().info(`Fetching listings for ${this.datasource}${pageNumber ? ', page ' + pageNumber : ''}`);
+    const link = pageLink ?? this.link;
     let response;
     let dom;
     let html;
     if (this.hooks?.fetch) {
-      response = await this.hooks.fetch(this.link);
+      response = await this.hooks.fetch(link);
     } else {
-      response = await fetch(this.link);
+      response = await fetch(link);
     }
     if (this.hooks?.afterFetch) {
       html = await this.hooks.afterFetch(response);
@@ -28,14 +29,13 @@ export class Datasource {
     }
     const virtualConsole = new VirtualConsole();
     const noopConsole = {
-      error: () => {},
-      warn: () => {},
-      info: () => {},
-      dir: () => {}
+      error: () => { },
+      warn: () => { },
+      info: () => { },
+      dir: () => { }
     }
     virtualConsole.sendTo(noopConsole);
-    dom = new JSDOM(html, { url: this.link, virtualConsole });
-
+    dom = new JSDOM(html, { url: link, virtualConsole });
     let listingElements = [];
     if (this.selectors._listingElements instanceof Object) {
       const allListingElements = dom.window.document.querySelectorAll(this.selectors._listingElements.selector);
@@ -56,7 +56,7 @@ export class Datasource {
       const detailsLink = this.selectors._link.getProperty(detailsLinkElement);
       response = await fetch(detailsLink);
       html = await response.text();
-      dom = new JSDOM(html, {url: detailsLink, virtualConsole});
+      dom = new JSDOM(html, { url: detailsLink, virtualConsole });
       const listing = new Listing();
       listing.populateFromDOMElement(dom.window.document, this.selectors)
       listing.landlord = this.datasource;
@@ -70,7 +70,7 @@ export class Datasource {
       if (this.hooks?.postprocess) {
         Logger.getInstance().info(`Postprocessing for listing ${i + 1}/${listingElements.length}`);
         try {
-          finalListing = await this.hooks.postprocess(listing); 
+          finalListing = await this.hooks.postprocess(listing);
         } catch (error) {
           Logger.getInstance().err(`Postprocessing failed for listing ${i + 1}. ${error.stack}`);
           finalListing = listing;

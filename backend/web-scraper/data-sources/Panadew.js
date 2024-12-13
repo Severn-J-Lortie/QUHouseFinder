@@ -21,8 +21,20 @@ export class Panadew extends Datasource {
     }
     super(
       'Panadew Property Management', 
-      'https://www.panadew.ca/property_type/student-rentals#headeranchor', 
+      'https://www.panadew.ca/property_type/student-rentals', 
       selectors
     );
+  }
+  async fetchListings() {
+    let pageNumber = 1;
+    let allListings = [];
+    let pageListings = [];
+    while (pageNumber < 2 || pageListings.length) {
+      const link = `${this.link}/page/${pageNumber}`;
+      pageListings = await super.fetchListings(link, pageNumber)
+      allListings = allListings.concat(pageListings)
+      pageNumber++;
+    }
+    return allListings;
   }
 }
