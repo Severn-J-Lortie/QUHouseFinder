@@ -51,7 +51,6 @@ export class QueensCommunityHousing extends Datasource {
             if (listing.description) {
               const ollamaClient = OllamaClient.getInstance();
               const leaseType = (await ollamaClient.extractInformation(['leaseType'], listing.description)).leaseType;
-              console.log(leaseType)
               listing.leaseType = leaseType;
             }
           }
