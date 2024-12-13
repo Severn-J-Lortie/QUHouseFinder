@@ -2,8 +2,8 @@ export class Model {
   static MODEL = 'gemma2:2b-instruct-fp16';
 
   createPrompt(fields, content) {
-    if (!(fields instanceof Array)) {
-      throw new Error('fields argument must be an array');
+    if (!(fields instanceof Array) && fields !== 'all') {
+      throw new Error('fields argument must be an array or "all"');
     }
     const fieldDescriptors = {
       leaseStartDate: 
