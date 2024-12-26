@@ -40,6 +40,12 @@ export class OllamaClient {
     let responseContent = responseJSON.message.content;
     try {
       responseContent = JSON.parse(responseContent);
+      // "null" --> null conversion
+      for (const key in responseContent) {
+        if (responseContent[key] === 'null') {
+          responseContent[key] = null;
+        }
+      }
     } catch (error) {
       Logger.getInstance().err(`Model failed to return properly formatted JSON. Got ${content}`);
       throw error;

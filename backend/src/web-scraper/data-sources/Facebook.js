@@ -90,7 +90,10 @@ export class Facebook extends Datasource {
             link = link.href
           }
           if (description) {
-            descriptionsAndLinks.push({description: description.innerText, link});
+            const seeMoreButtonClickFailed = description.innerText.toLowerCase().includes('... see more');
+            if (!seeMoreButtonClickFailed) {
+              descriptionsAndLinks.push({description: description.innerText, link});
+            }
           }
         }
         return descriptionsAndLinks;

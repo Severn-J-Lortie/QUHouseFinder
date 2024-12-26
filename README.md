@@ -25,5 +25,3 @@ All of Kingston's student listings, aggregated in one place.
 - User submissions
 - Better monitoring
 - Refactor: move all .env logic into a single class call
-- **Bugfix**: Facebook datasource needs to restore session from saved cookie file. Until then,
-the whole web scraper has been stopped on prod.

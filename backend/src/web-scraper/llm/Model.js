@@ -37,7 +37,7 @@ Today's date: ${formattedDate}.
 Your task is to extract specific details from the text the user provides. 
 Respond only with the details in the exact format they specify, with no 
 additional comments, explanations, or reasoning. If you can't find a 
-specific detail, or if you are unsure, just use "null" for that field.
+specific detail, or if you are unsure, just use null for that field.
 Required format is a JSON object with ONLY the following fields:
 ${fieldMessage}
 The output must always be valid a valid JSON object (so just null is not
