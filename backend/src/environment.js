@@ -1,8 +1,13 @@
+import fs from 'node:fs';
 import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export function setupEnvironment(envFilePath) {
+export function setupEnvironment() {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
-  dotenv.config({ path: path.resolve(dirname, envFilePath), override: true });
+  const fullEnvFilePath = path.resolve(dirname, '../../.env');
+  if (!fs.existsSync(fullEnvFilePath)) {
+    throw new Error(`No .env file at ${fullEnvFilePath}`)
+  }
+  dotenv.config({ path: fullEnvFilePath, override: true });
 }
