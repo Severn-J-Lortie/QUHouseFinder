@@ -17,11 +17,13 @@ All of Kingston's student listings, aggregated in one place.
 ## TODO
 - MVP:
   - Forgot password, delete account
-  - Add emails when filters change
-    - Send an email with a link to the filter
 - Refactor: listings should have a method to turn themselves into text representations
 - Refactor: listings should have a fromSQL method
 - Sort entries by newest first. Just need to store timestamp when we insert the entry
-- Add lease-type for Queen's Community Housing
 - Add "last updated" card
 - Add a map embed in the description dropdown
+- User submissions
+- Better monitoring
+- Refactor: move all .env logic into a single class call
+- **Bugfix**: Facebook datasource needs to restore session from saved cookie file. Until then,
+the whole web scraper has been stopped on prod.

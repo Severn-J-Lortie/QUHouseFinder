@@ -1,15 +1,12 @@
 import fs from 'node:fs';
 import https from 'node:https';
-import path from 'node:path';
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'node:url';
 
+import { setupEnvironment } from '../environment.js';
 import { initApp } from './app.js';
 import { Logger } from '../Logger.js';
 
 async function main() {
-  const dirname = path.dirname(fileURLToPath(import.meta.url));
-  dotenv.config({ path: path.resolve(dirname, '../../.env') });
+  setupEnvironment('../../.env');
 
   const logger = Logger.getInstance();
   const app = await initApp();

@@ -12,8 +12,6 @@ import {PrimeVueResolver} from '@primevue/auto-import-resolver';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(dirname, '../.env') });
 
-console.log(process.env.QU_KEY_PATH && process.env.QU_CERT_PATH);
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [

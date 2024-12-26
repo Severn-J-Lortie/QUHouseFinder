@@ -1,13 +1,10 @@
-import dotenv from 'dotenv';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { Database } from '../Database.js';
+import { Database } from '../../Database.js';
 import { FilterExecutor } from './FilterExecutor.js';
 import { Mailer } from './Mailer.js';
+import { setupEnvironment } from '../environment.js';
 
 async function main() {
-  const dirname = path.dirname(fileURLToPath(import.meta.url));
-  dotenv.config({ path: path.resolve(dirname, '../../.env') });
+  setupEnvironment('../../.env')
   const db = await Database.getInstance().connect();
   const filterExecutor = new FilterExecutor(db);
   const mailer = new Mailer(db);

@@ -3,7 +3,7 @@ import { Heron } from './data-sources/Heron.js';
 import { Panadew } from './data-sources/Panadew.js';
 import { QueensCommunityHousing } from './data-sources/QueensCommunityHousing.js';
 import { Facebook } from './data-sources/Facebook.js';
-import { Logger } from '../Logger.js'
+import { Logger } from '../Logger.js';
 
 import { Database } from '../Database.js';
 

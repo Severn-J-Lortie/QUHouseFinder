@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 
 export class Logger {
   static #instance = null;
@@ -11,7 +12,7 @@ export class Logger {
       throw new Error('Need to specify log file path with environment variable QU_LOG_PATH');
     }
     if (!fs.existsSync(this.logFilePath)) {
-      fs.writeFileSync(this.logFilePath, '', 'utf-8');
+      fs.writeFileSync(this.logFilePath, '', 'utf-8', 'w+');
     }
     Logger.#instance = this;
   }
