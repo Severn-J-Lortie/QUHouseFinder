@@ -3,6 +3,7 @@ import { Datasource } from '../Datasource.js';
 import { Listing } from '../Listing.js'
 import { OllamaClient } from '../llm/OllamaClient.js';
 import { Logger } from '../../Logger.js';
+import fs from 'node:fs';
 
 export class Facebook extends Datasource {
   constructor() {
@@ -28,21 +29,30 @@ export class Facebook extends Datasource {
     this.ollamaClient = OllamaClient.getInstance();
   }
   async #login(page) {
-    const cookies = await page.cookies();
-    const sessionCookie = cookies.find(cookie => cookie.name === 'c_user');
-    if (!sessionCookie) {
-      await page.waitForSelector(this.selectors.loginUsername);
+    const cookiesFile = `${process.env['QU_DATA_DIR']}/facebook_cookies.json`;
+    let cookies;
+    if (fs.existsSync(cookiesFile)) {
+      cookies = JSON.parse(fs.readFileSync(cookiesFile));
+      await page.setCookie(...cookies);
+    }
+    await page.goto(this.link);
+    try {
+      await page.waitForSelector(this.selectors.loginUsername, { timeout: 2000 });
+      Logger.getInstance().info('Facebook session expired, logging in...');
       await page.type(this.selectors.loginUsername, this.facebook_user);
       await page.type(this.selectors.loginPassword, this.facebook_pass);
       await page.click(this.selectors.loginButton);
       await page.waitForNavigation();
+    } catch {
+      Logger.getInstance().info('Facebook session restored from saved cookie');
     }
+    cookies = await page.cookies();
+    fs.writeFileSync(cookiesFile, JSON.stringify(cookies));
   }
   async fetchListings() {
     Logger.getInstance().info(`Fetching listings for ${this.datasource}`);
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
-    await page.goto(this.link);
     await this.#login(page);
     await page.click('body'); // dismisses notifications popup
 
