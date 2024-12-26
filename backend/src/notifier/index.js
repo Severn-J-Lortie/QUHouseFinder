@@ -4,7 +4,7 @@ import { Mailer } from './Mailer.js';
 import { setupEnvironment } from '../environment.js';
 
 async function main() {
-  setupEnvironment('../../.env')
+  setupEnvironment()
   const db = await Database.getInstance().connect();
   const filterExecutor = new FilterExecutor(db);
   const mailer = new Mailer(db);

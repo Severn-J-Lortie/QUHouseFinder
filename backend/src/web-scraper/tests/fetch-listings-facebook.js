@@ -1,17 +1,12 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import dotenv from 'dotenv';
-
+import { setupEnvironment } from '../../environment.js';
 import { Facebook } from '../data-sources/Facebook.js';
 
 async function main() {
-  const dirname = path.dirname(fileURLToPath(import.meta.url));
-  dotenv.config({ path: path.resolve(dirname, '../../../.env') });
+  setupEnvironment();
   const facebook = new Facebook();
   const listings = await facebook.fetchListings();
   for (const listing of listings) {
     console.log(listing);
-    console.log(listing.toSQL());
   }
 }
 main();

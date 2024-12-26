@@ -6,7 +6,7 @@ import { initApp } from './app.js';
 import { Logger } from '../Logger.js';
 
 async function main() {
-  setupEnvironment('../../.env');
+  setupEnvironment();
 
   const logger = Logger.getInstance();
   const app = await initApp();
