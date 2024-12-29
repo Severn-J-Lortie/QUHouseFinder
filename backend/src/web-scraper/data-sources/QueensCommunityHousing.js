@@ -6,11 +6,11 @@ export class QueensCommunityHousing extends Datasource {
     const selectors = {
       _listingElements: 'tr',
       _link: { selector: 'td:nth-of-type(10) > a', getProperty: el => el.href },
-      address: { 
+      address: {
         selector: '#search-listings > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2)',
         getProperty: removeCellLabel
       },
-      leaseType: { 
+      leaseType: {
         selector: '#search-listings > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(5)',
         getProperty: removeCellLabel
       },
@@ -19,7 +19,7 @@ export class QueensCommunityHousing extends Datasource {
         getProperty: removeCellLabel
       },
       leaseStartDate: {
-        selector:'#search-listings > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(3)',
+        selector: '#search-listings > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(3)',
         getProperty: removeCellLabel
       },
       totalPrice: '#search-listings > div > div.row.px-4.mb-2 > div.col-md-2.text-end.lead > h2 > strong',
@@ -29,8 +29,8 @@ export class QueensCommunityHousing extends Datasource {
       }
     }
     super(
-      "Queen's Community Housing", 
-      'https://listingservice.housing.queensu.ca/public/getByFilter?show_test=0&num_items=1000', 
+      "Queen's Community Housing",
+      'https://listingservice.housing.queensu.ca/public/getByFilter?show_test=0&num_items=1000',
       selectors,
       {
         afterFetch: async (response) => {
@@ -47,7 +47,11 @@ export class QueensCommunityHousing extends Datasource {
         },
         postprocess: async (listing) => {
           const formattedLeaseType = listing.leaseType.toLowerCase();
-          if (!(formattedLeaseType.includes('lease') || formattedLeaseType.includes('sublet'))) {
+          if (formattedLeaseType.includes('lease')) {
+            listing.leaseType = 'Lease';
+          } else if (formattedLeaseType.includes('sublet')) {
+            listing.leaseType = 'Sublet';
+          } else {
             if (listing.description) {
               const ollamaClient = OllamaClient.getInstance();
               const leaseType = (await ollamaClient.extractInformation(['leaseType'], listing.description)).leaseType;
