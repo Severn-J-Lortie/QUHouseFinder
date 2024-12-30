@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import { Model } from './Model.js';
 import { Logger } from '../../Logger.js';
 
 export class OllamaClient {
@@ -18,7 +17,6 @@ export class OllamaClient {
     }
     OllamaClient.#PORT = Number(process.env['QU_OLLAMA_PORT']);
     OllamaClient.#HOST = process.env['QU_OLLAMA_HOST'];
-    this.model = new Model();
     OllamaClient.#instance = this;
   }
   async extractInformation(fields, content) {
@@ -98,7 +96,7 @@ apartment respond false. Respond in the required fromat of a JSON object.`
     const response = await fetch(`http://${OllamaClient.#HOST}:${OllamaClient.#PORT}/api/chat`, {
       method: 'POST',
       body: JSON.stringify({
-        model: Model.MODEL,
+        model: 'gemma2:2b-instruct-fp16',
         messages,
         stream: false,
         format: 'json',
