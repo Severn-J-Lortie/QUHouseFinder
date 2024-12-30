@@ -54,6 +54,7 @@ a very brief description of the location. This should NEVER be null.>\n`
 
     const taskMessage =`
 Today's date: ${formattedDate}.
+Location: Kingston, Ontario
 
 Your task is to extract specific details from the text the user provides. 
 Respond only with the details in the exact format they specify, with no 
