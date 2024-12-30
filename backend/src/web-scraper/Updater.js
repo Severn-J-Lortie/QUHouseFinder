@@ -3,6 +3,7 @@ import { Heron } from './data-sources/Heron.js';
 import { Panadew } from './data-sources/Panadew.js';
 import { QueensCommunityHousing } from './data-sources/QueensCommunityHousing.js';
 import { Facebook } from './data-sources/Facebook.js';
+import { Axon } from './data-sources/Axon.js';
 import { Logger } from '../Logger.js';
 
 import { Database } from '../Database.js';
@@ -14,7 +15,8 @@ export class Updater {
       new Heron(),
       new Panadew(),
       new QueensCommunityHousing(),
-      new Facebook()
+      new Facebook(),
+      new Axon()
     ];
     this.tableName = 'listings';
   }
