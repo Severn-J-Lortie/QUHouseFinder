@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
-import { Logger } from '../Logger.js';
 import { Database } from '../Database.js';
 import { getRoutes as indexRoutes } from './routes/index.js';
 import { getRoutes as authRoutes } from './routes/auth.js';
@@ -12,12 +11,6 @@ import { requireAuth } from './middleware/auth.js';
 
 export async function initApp() {
   const app = express();
-  const logger = Logger.getInstance();
-  let platform = process.env['QU_PLATFORM'] || 'development';
-  if (!['production', 'development'].includes(platform)) {
-    throw new Error('Invalid platform specified in QU_PLATFORM');
-  }
-  logger.info(`Running in mode: ${platform}`);
 
   app.use(cors({
     origin: process.env['QU_FRONTEND_LOCATION'] || 'https://localhost:5173',
