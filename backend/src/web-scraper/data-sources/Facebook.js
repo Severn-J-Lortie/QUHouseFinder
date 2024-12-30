@@ -113,14 +113,17 @@ export class Facebook extends Datasource {
     const listings = [];
     for (const entry of dedupedDescriptionsAndLinks) {
       try {
-        const fields = await this.ollamaClient.extractInformation('all', entry.description);
-        fields.description = entry.description;
-        fields.link = entry.link;
-        fields.landlord = 'Private landlord (Facebook)'
-        fields.datasource = this.datasource;
-        const listing = new Listing();
-        listing.poplateFromObject(fields);
-        listings.push(listing);
+        const isListing = await this.ollamaClient.determineIfListing(entry.description);
+        if (isListing) {
+          const fields = await this.ollamaClient.extractInformation('all', entry.description);
+          fields.description = entry.description;
+          fields.link = entry.link;
+          fields.landlord = 'Private landlord (Facebook)'
+          fields.datasource = this.datasource;
+          const listing = new Listing();
+          listing.poplateFromObject(fields);
+          listings.push(listing);
+        }
       } catch (e) {
         Logger.getInstance().err(`Failed to postprocess ${entry.address}: ${e.stack}`);
         continue;
