@@ -1,6 +1,7 @@
 import { ref, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { FilterMatchMode } from '@primevue/core/api';
+import { apiBaseUrl } from '@/config/api';
 
 export const useFiltersStore = defineStore('filters', () => {
   const filters = ref([]);
@@ -32,7 +33,7 @@ export const useFiltersStore = defineStore('filters', () => {
   }
 
   async function saveFilter(fields) {
-    const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters/save`, {
+    const resultResponse = await fetch(`${apiBaseUrl}/filters/save`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -47,7 +48,7 @@ export const useFiltersStore = defineStore('filters', () => {
     filters.value.push({ id: result.id, fields: structuredClone(removeReactivity(fields)) });
   }
   async function updateFilter(id, fields) {
-    const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters/update`, {
+    const resultResponse = await fetch(`${apiBaseUrl}/filters/update`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -63,7 +64,7 @@ export const useFiltersStore = defineStore('filters', () => {
     filters.value[filterIdx].fields = structuredClone(removeReactivity(fields));
   }
   async function deleteFilter(id) {
-    const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters/delete`, {
+    const resultResponse = await fetch(`${apiBaseUrl}/filters/delete`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -79,7 +80,7 @@ export const useFiltersStore = defineStore('filters', () => {
     filters.value.splice(filterIdx, 1);
   }
   async function fetchFilters() {
-    const resultResponse = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/filters`, {
+    const resultResponse = await fetch(`${apiBaseUrl}/filters`, {
       credentials: 'include'
     });
     const result = await resultResponse.json();

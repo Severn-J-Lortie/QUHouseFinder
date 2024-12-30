@@ -7,7 +7,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import Components from 'unplugin-vue-components/vite';
-import {PrimeVueResolver} from '@primevue/auto-import-resolver';
+import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(dirname, '../.env') });
@@ -31,10 +31,18 @@ export default defineConfig({
   server: {
     https: process.env.QU_KEY_PATH && process.env.QU_CERT_PATH
       ? {
-          key: fs.readFileSync(process.env.QU_KEY_PATH),
-          cert: fs.readFileSync(process.env.QU_CERT_PATH),
-        }
+        key: fs.readFileSync(process.env.QU_KEY_PATH),
+        cert: fs.readFileSync(process.env.QU_CERT_PATH),
+      }
       : false,
     port: 5173,
+    proxy: process.env.VITE_USE_PROXY ? {
+      '/api': {
+        target: 'https://quhousefinder.com',
+        changeOrigin: true,
+        secure: true,
+      }
+    }
+      : false,
   }
 })

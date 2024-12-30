@@ -10,6 +10,5 @@ export function getRoutes() {
       res.status(500).send('Server encountered an error trying to get latest listings.');
     }
   });
-
   return router;
 }

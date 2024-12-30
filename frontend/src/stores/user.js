@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { apiBaseUrl } from '@/config/api';
 
 export const useUserStore = defineStore('user', () => {
   const loggedIn = ref(false);
@@ -8,7 +9,7 @@ export const useUserStore = defineStore('user', () => {
     if (loggedIn.value) {
       return true;
     }
-    const responseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/me`, {
+    const responseJSON = await fetch(`${apiBaseUrl}/me`, {
       credentials: 'include'
     });
     const response = await responseJSON.json();
@@ -20,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function login(email, password) {
-    const loginResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/auth/login`, {
+    const loginResponseJSON = await fetch(`${apiBaseUrl}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +40,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function register(email, password, name) {
-    const registerResponseJSON = await fetch(`${import.meta.env.VITE_BACKEND_LOCATION}/auth/register`, {
+    const registerResponseJSON = await fetch(`${apiBaseUrl}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
