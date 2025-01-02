@@ -79,18 +79,30 @@ sufficient).`;
       {
         role: 'system',
         content: `
-Your task is to determine if the posting the user provides is a listing for a
-lease or sublet for a house. It should not be an advertisement where the poser
-is looking for a house. They must be offering a sublet or lease for a house or
-apartment. If they are, respond true. If the text is not a listing for a house or
-apartment respond false. Respond in the required fromat of a JSON object.`
+Your task is to figure out if text the user provides is a listing for a rental lease or sublet. It cannot anything else.
+For example, it cannot be someone looking for a lease or sublet, they absolutely must be offering something, not looking
+for something. Additionally, filter out all other irrelevant things that do not pretain to listings for leases and sublets.
+Respond with a JSON object that only has the key "isListing." isListing is true if the text is a relevant advertisement for
+a sublet or lease and false otherwise.
+
+Example 1:
+Text: "Central house 15 minute walk from Queen's Campus. 2 rooms, 1 bathroom. $2000/month. Contact if interested."
+Output: {isListing: true}
+
+Example 2:
+Text: "Hey everyone! I am looking for a house for next year. I am an undergraduate computer science student in second year.
+I am looking for a 4-month lease or sublet."
+Output {isListing: false}
+`
       },
       {
         role: 'user',
         content: listing
       }
     ];
-    return (await this.requestOllama(messages));
+    console.log(messages);
+    const result = await this.requestOllama(messages);
+    return result.isListing;
   }
   async requestOllama(messages) {
     const response = await fetch(`http://${OllamaClient.#HOST}:${OllamaClient.#PORT}/api/chat`, {
