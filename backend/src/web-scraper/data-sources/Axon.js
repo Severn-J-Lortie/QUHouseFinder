@@ -10,7 +10,7 @@ export class Axon extends Datasource {
       beds: 'div.elementor-widget-icon-list:nth-child(3) li',
       baths: 'div.elementor-widget-icon-list:nth-child(3) li:nth-child(2)',
       totalPrice: 'div.elementor-element.elementor-widget.elementor-widget-heading:nth-child(2)',
-      leaseStartDate: 'h3.elementor-heading-title.elementor-size-default',
+      leaseStartDate: {selector: 'h3.elementor-heading-title.elementor-size-default', getProperty: el => el.textContent.split(':')[1]},
       description: 'div.elementor-element.elementor-widget.elementor-widget-text-editor'
     }
     super(  
