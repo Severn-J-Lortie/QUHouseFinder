@@ -36,24 +36,36 @@ export class Datasource {
     }
     virtualConsole.sendTo(noopConsole);
     dom = new JSDOM(html, { url: link, virtualConsole });
-    let listingElements = [];
-    if (this.selectors._listingElements instanceof Object) {
-      const allListingElements = dom.window.document.querySelectorAll(this.selectors._listingElements.selector);
-      for (const listingElement of allListingElements) {
-        if (this.selectors._listingElements.filter(listingElement)) {
-          listingElements.push(listingElement);
-        }
+
+    let links = [];
+    if (this.selectors._links) {
+      const allLinkElements = dom.window.document.querySelectorAll(this.selectors._links);
+      for (const link of allLinkElements) {
+        links.push(link.href);
       }
     } else {
-      listingElements = dom.window.document.querySelectorAll(this.selectors._listingElements);
+      let listingElements = [];
+      if (this.selectors._listingElements instanceof Object) {
+        const allListingElements = dom.window.document.querySelectorAll(this.selectors._listingElements.selector);
+        for (const listingElement of allListingElements) {
+          if (this.selectors._listingElements.filter(listingElement)) {
+            listingElements.push(listingElement);
+          }
+        }
+      } else {
+        listingElements = dom.window.document.querySelectorAll(this.selectors._listingElements);
+      }
+      for (const listingElement of listingElements) {
+        const detailsLinkElement = listingElement.querySelector(this.selectors._link.selector);
+        const detailsLink = this.selectors._link.getProperty(detailsLinkElement);
+        links.push(detailsLink);
+      }
     }
 
     const listings = [];
-    for (let i = 0; i < listingElements.length; i++) {
-      Logger.getInstance().info(`Grabbing details for listing ${i + 1}/${listingElements.length}`);
-      const listingElement = listingElements[i];
-      const detailsLinkElement = listingElement.querySelector(this.selectors._link.selector);
-      const detailsLink = this.selectors._link.getProperty(detailsLinkElement);
+    for (let i = 0; i < links.length; i++) {
+      Logger.getInstance().info(`Grabbing details for listing ${i + 1}/${links.length}`);
+      const detailsLink = links[i];
       response = await fetch(detailsLink);
       html = await response.text();
       dom = new JSDOM(html, { url: detailsLink, virtualConsole });
