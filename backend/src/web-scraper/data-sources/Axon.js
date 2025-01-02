@@ -9,9 +9,9 @@ export class Axon extends Datasource {
       address: 'h1.elementor-heading-title.elementor-size-default',
       beds: 'div.elementor-widget-icon-list:nth-child(3) li',
       baths: 'div.elementor-widget-icon-list:nth-child(3) li:nth-child(2)',
-      totalPrice: { selector: 'div.elementor-element.elementor-widget.elementor-widget-heading:nth-child(2)' },
-      leaseStartDate: { selector: 'h3.elementor-heading-title.elementor-size-default', getProperty: el => el.textContent.split(':')[1] },
-      description: { selector: 'div.elementor-element.elementor-widget.elementor-widget-text-editor', getProperty: el => el.textContent.trim().replaceAll('\n', ' ') }
+      totalPrice: 'div.elementor-element.elementor-widget.elementor-widget-heading:nth-child(2)',
+      leaseStartDate: 'h3.elementor-heading-title.elementor-size-default',
+      description: 'div.elementor-element.elementor-widget.elementor-widget-text-editor'
     }
     super(  
       'Axon Property Management', 

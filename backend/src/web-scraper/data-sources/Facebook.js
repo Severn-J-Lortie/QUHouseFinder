@@ -77,7 +77,7 @@ export class Facebook extends Datasource {
             button.click();
           }
         }
-    }, this.selectors);
+      }, this.selectors);
 
       await new Promise(resolve => setTimeout(resolve, loadWaitTime));
       const result = await page.evaluate(async (selectors) => {
@@ -92,7 +92,7 @@ export class Facebook extends Datasource {
           if (description) {
             const seeMoreButtonClickFailed = description.innerText.toLowerCase().includes('... see more');
             if (!seeMoreButtonClickFailed) {
-              descriptionsAndLinks.push({description: description.innerText, link});
+              descriptionsAndLinks.push({ description: description.innerText, link });
             }
           }
         }
@@ -114,16 +114,20 @@ export class Facebook extends Datasource {
     for (const entry of dedupedDescriptionsAndLinks) {
       try {
         const isListing = await this.ollamaClient.determineIfListing(entry.description);
-        if (isListing) {
-          const fields = await this.ollamaClient.extractInformation('all', entry.description);
-          fields.description = entry.description;
-          fields.link = entry.link;
-          fields.landlord = 'Private landlord (Facebook)'
-          fields.datasource = this.datasource;
-          const listing = new Listing();
-          listing.poplateFromObject(fields);
-          listings.push(listing);
+        if (!isListing) {
+          continue;
         }
+        const fields = await this.ollamaClient.extractInformation('all', entry.description);
+        if (!fields.address) {
+          continue;
+        }
+        fields.description = entry.description;
+        fields.link = entry.link;
+        fields.landlord = 'Private landlord (Facebook)'
+        fields.datasource = this.datasource;
+        const listing = new Listing();
+        listing.poplateFromObject(fields);
+        listings.push(listing);
       } catch (e) {
         Logger.getInstance().err(`Failed to postprocess ${entry.address}: ${e.stack}`);
         continue;

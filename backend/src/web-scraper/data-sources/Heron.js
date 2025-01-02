@@ -14,10 +14,7 @@ export class Heron extends Datasource {
       baths: 'body > div:nth-child(2) > section.main-container.container > div > div.t-sec.clearfix > div.col-md-4.left-sec > div.highlight-container > div:nth-child(3) > div.value',
       totalPrice: 'div.price',
       leaseStartDate: 'body > div:nth-child(2) > section.main-container.container > div > div.t-sec.clearfix > div.col-md-8.right-sec > div:nth-child(1) > div > div.t-sec.clearfix > div.left-sec.col-md-7 > ul > li:nth-child(4) > div.value',
-      description: {
-        selector: 'body > div:nth-child(2) > section.main-container.container > div > div.t-sec.clearfix > div.col-md-8.right-sec > div:nth-child(1) > div > div:nth-child(2)',
-        getProperty: el => el.textContent.trim().replace('\n', ' ')
-      }
+      description: 'body > div:nth-child(2) > section.main-container.container > div > div.t-sec.clearfix > div.col-md-8.right-sec > div:nth-child(1) > div > div:nth-child(2)',
     }
     super('Heron Management', 'https://mipprental.com/C00185', selectors, {
       postprocess: async (listing) => {
