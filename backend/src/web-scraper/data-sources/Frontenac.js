@@ -1,31 +1,52 @@
 import { Datasource } from '../Datasource.js';
+import { Listing } from '../Listing.js';
+import { Logger } from '../../Logger.js';
 import { OllamaClient } from '../llm/OllamaClient.js'
+import fetch from 'node-fetch';
+import { JSDOM } from 'jsdom';
 export class Frontenac extends Datasource {
   constructor() {
-    const selectors = {
-      _listingElements: 'div.property-listings div.col-sm-6.col-md-4:has(.ribbon-green)',
-      _link: { selector: 'article > h4 > a', getProperty: el => el.href },
-      address: 'div.titlewrap.clearfix',
-      beds: 'span.bedrooms > b',
-      baths: 'div.footer-left.pull-left span:nth-child(2) > b',
-      totalPrice: 'span.property-price > b',
-      description: { selector: 'ul.wp-block-list', getProperty: el => el.textContent.trim().replace('\n', ' ') },
-      leaseStartDate: {
-        selector: 'section.entry-content.single-content.clearfix > h4',
-        getProperty: el => el.textContent.split(':')[1].trim()
-      }
-    }
     super(
       'Frontenac Property Management',
-      'https://www.frontenacproperty.com/properties/stud-rentals/?sort=availability&order=ASC',
-      selectors,
-      {
-        postprocess: async (listing) => {
-          const ollamaClient = OllamaClient.getInstance();
-          const response = await ollamaClient.extractInformation(['address'], listing.address);
-          listing.address = response.address;
-          return listing;
+      'https://cms.frontenacproperty.com/items/Listings',
+    );
+  }
+  async fetchListings() {
+    Logger.getInstance().info(`Fetching listings for ${this.datasource}`);
+    let response = await fetch(this.link);
+    response = await response.json();
+    const listings = [];
+    for (const property of response.data) {
+      if (property?.availability.toLowerCase() !== 'available') {
+        continue;
       }
-    });
+      let description = '';
+      const descriptionDOM = new JSDOM(property.description);
+      const descriptionList = descriptionDOM.window.document.querySelector('ul');
+      if (descriptionList) {
+        const listElements = descriptionDOM.window.document.querySelectorAll('ul > li');
+        for (const listElement of listElements) {
+          description += `${listElement.textContent}\n`;
+        }
+      } else {
+        description = descriptionDOM.window.document.body.textContent;
+      }
+      const listingObj = {
+        address: property.title,
+        description,
+        beds: property.bedrooms,
+        baths: property.bathrooms,
+        leaseStartDate: property.date_available,
+        totalPrice: property.price,
+        link: `https://frontenacproperty.com/${property.slug}`,
+        leaseType: 'Lease',
+        landlord: 'Frontenac Property Management'
+      }
+      const listing = new Listing();
+      listing.poplateFromObject(listingObj);
+      listings.push(listing);
+    }
+    Logger.getInstance().info(`Fetched ${listings.length} listings`);
+    return listings;
   }
 }
