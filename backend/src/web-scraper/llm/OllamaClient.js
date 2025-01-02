@@ -100,7 +100,6 @@ Output {isListing: false}
         content: listing
       }
     ];
-    console.log(messages);
     const result = await this.requestOllama(messages);
     return result.isListing;
   }
