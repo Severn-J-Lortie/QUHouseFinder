@@ -20,7 +20,7 @@ export class Listing {
 
     for (const key in this) {
       let property = this[key];
-      if (!property) {
+      if (property == null) {
         continue;
       }
       if (numericProperties.includes(key)) {

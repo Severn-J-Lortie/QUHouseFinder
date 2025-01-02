@@ -6,7 +6,7 @@ export class Panadew extends Datasource {
       address: { selector: '.title', getProperty: el => el.textContent.split('\n')[1] },
       leaseStartDate: {
         selector: '.unit-detail__available-date.text--muted',
-        getProperty: el => el.textContent.split(' ')[1].trim()
+        getProperty: el => el.textContent.trim().split(' ')[1]
       },
       beds: '.unit-detail__unit-info > li',
       baths: '.unit-detail__unit-info > li:nth-child(2)',

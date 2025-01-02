@@ -11,12 +11,12 @@ import { Database } from '../Database.js';
 export class Updater {
   constructor() {
     this.datasources = [
-      new Frontenac(),
-      new Heron(),
+      // new Frontenac(),
+      // new Heron(),
       new Panadew(),
-      new QueensCommunityHousing(),
-      new Facebook(),
-      new Axon()
+      // new QueensCommunityHousing(),
+      // new Facebook(),
+      // new Axon()
     ];
     this.tableName = 'listings';
   }
