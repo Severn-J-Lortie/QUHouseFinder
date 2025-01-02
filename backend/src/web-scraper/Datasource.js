@@ -80,7 +80,7 @@ export class Datasource {
 
       let finalListing;
       if (this.hooks?.postprocess) {
-        Logger.getInstance().info(`Postprocessing for listing ${i + 1}/${listingElements.length}`);
+        Logger.getInstance().info(`Postprocessing for listing ${i + 1}/${links.length}`);
         try {
           finalListing = await this.hooks.postprocess(listing);
         } catch (error) {
