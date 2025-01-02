@@ -148,7 +148,6 @@ export class Listing {
       'beds',
       'baths',
       'totalPrice',
-      'link',
       'datasource'
     ];
     let hashString = '';
